@@ -5,15 +5,16 @@ using System.Xml.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
 using static UnityEditor.Progress;
 
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
     [SerializeField] private Transform orientation;
-    [SerializeField] private Transform camPosition;
+    private Transform camPosition;
     private GameInput gameInput;
     private float speedPlayer = 4.8f;
     private Vector3 moveDirection;
@@ -33,13 +34,29 @@ public class Player : MonoBehaviour
     public event EventHandler OnDropItem;
 
     // Raycast
-    [SerializeField] private TextMeshProUGUI messageInterc;
-    private bool wObject;
+    //[SerializeField] private TextMeshProUGUI messageInterc;
+    //private bool wObject;
+
+    public static event EventHandler OnAnyPlayerSpawned; // static ya que queremos que no perternezca a una clase en concreto sino en general
+
+    public static Player LocalInstance { get; private set; }
 
     private void Awake()
     {
         gameInput = GameInput.instance;
         cController = GetComponent<CharacterController>(); // busca dentro de donde este el script
+        camPosition = this.transform; //  de moemnto para el error xd
+    }
+
+    // cuando se inicie la conexion se lanzara este metodo
+    public override void OnNetworkSpawn()
+    {
+        if(IsOwner)
+        {
+            LocalInstance = this;
+        }
+
+        OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
     }
 
     // Start is called before the first frame update
@@ -81,15 +98,14 @@ public class Player : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(camPosition.position, camPosition.position + camPosition.forward * 3f);
+        //Gizmos.DrawLine(camPosition.position, camPosition.position + camPosition.forward * 3f);
     }
 
     // Update is called once per frame
     private void Update()
     {
-        // raycast Player
-        messageInteractionsPlayer();
-
+        //// raycast Player
+        //messageInteractionsPlayer();
         // movement Player
         MovementPlayer(gameInput.GetMovementVector(), gameInput.GetJump(), gameInput.GetCrouch(), gameInput.GetSprint());
     }
@@ -141,18 +157,18 @@ public class Player : MonoBehaviour
         #endregion
     }
 
-    // TODO mover RAYCAST a otro fichero para mejorar organizacion, colocar ahi todas las interacciones
-    private void messageInteractionsPlayer()
-    {
-        if(!wObject && messageInterc.text != "") messageInterc.text = ""; // reset text
-        wObject = false;
+    //// TODO mover RAYCAST a otro fichero para mejorar organizacion, colocar ahi todas las interacciones
+    //private void messageInteractionsPlayer()
+    //{
+    //    if(!wObject && messageInterc.text != "") messageInterc.text = ""; // reset text
+    //    wObject = false;
 
-        if (getRaycastPlayer() is IMessageInteraction messInteract)
-        {
-            wObject = true;
-            messageInterc.text = messInteract.getMessageToShow();
-        }
-    }
+    //    if (getRaycastPlayer() is IMessageInteraction messInteract)
+    //    {
+    //        wObject = true;
+    //        messageInterc.text = messInteract.getMessageToShow();
+    //    }
+    //}
 
     public MonoBehaviour getRaycastPlayer() 
     {
@@ -175,4 +191,13 @@ public class Player : MonoBehaviour
         transform.position = pos;
         cController.enabled = true;
     }
+
+    public void setRotation(Quaternion rotation) {
+        this.orientation.rotation = rotation;
+    }
+
+    public void setCMposition(Vector3 CMposition) {
+        camPosition.position = CMposition;
+    }
+
 }

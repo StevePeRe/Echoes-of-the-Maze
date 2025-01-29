@@ -23,12 +23,13 @@ public class HUD : MonoBehaviour
 
     private void Awake()
     {
-        gameInput = GameInput.instance;
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        gameInput = GameInput.instance;
+
         itemOnHand = null; // empieza sin item en la mano
         selection = 0;
 
