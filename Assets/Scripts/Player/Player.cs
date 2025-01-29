@@ -12,9 +12,9 @@ using static UnityEditor.Progress;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private GameInput gameInput;
     [SerializeField] private Transform orientation;
     [SerializeField] private Transform camPosition;
+    private GameInput gameInput;
     private float speedPlayer = 4.8f;
     private Vector3 moveDirection;
 
@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
+        gameInput = GameInput.instance;
         cController = GetComponent<CharacterController>(); // busca dentro de donde este el script
     }
 

@@ -9,25 +9,32 @@ public class RefugeDoor : MonoBehaviour, IInteractuable, IMessageInteraction
     [SerializeField] private float transitionDuration = 1f; // Duración de la apertura/cierre
     [SerializeField] private bool isOpen = false; // Estado inicial de la puerta
 
+    //private Quaternion actualRotation; // siempre empienzan cerradas las puertas
     private Quaternion closedRotation;
     private Quaternion openRotation;
     private Coroutine doorCoroutine;
+    private bool doorMoving = false;
 
     void Start()
     {
-        // Guardar las rotaciones inicial (cerrada) y abierta
-        closedRotation = doorHinge.localRotation;
-        openRotation = Quaternion.Euler(doorHinge.localRotation.eulerAngles + new Vector3(0, openAngle, 0));
+        if (!isOpen) {
+            closedRotation = doorHinge.localRotation;
+            openRotation = Quaternion.Euler(doorHinge.localRotation.eulerAngles + new Vector3(0, openAngle, 0));
+        } else
+        {
+            closedRotation = Quaternion.Euler(doorHinge.localRotation.eulerAngles + new Vector3(0, -openAngle, 0));
+            openRotation = doorHinge.localRotation;
+        }
     }
 
     public void ToggleDoor()
     {
-        if (doorCoroutine != null)
-        {
-            StopCoroutine(doorCoroutine);
-        }
+        if (doorMoving) return; // no empezar ninguna corutina hasta que acabe la anterior
 
+        doorMoving = true;
         doorCoroutine = StartCoroutine(RotateDoor(isOpen ? openRotation : closedRotation, isOpen ? closedRotation : openRotation));
+
+        //doorCoroutine = StartCoroutine(RotateDoor(actualRotation, isOpen ? openRotation : closedRotation));
         isOpen = !isOpen;
     }
 
@@ -42,6 +49,7 @@ public class RefugeDoor : MonoBehaviour, IInteractuable, IMessageInteraction
             yield return null;
         }
 
+        doorMoving = false;
         doorHinge.localRotation = endRotation; // Asegurarse de terminar exactamente en la rotación final
     }
 
@@ -49,6 +57,7 @@ public class RefugeDoor : MonoBehaviour, IInteractuable, IMessageInteraction
     {
         if(MazeGameManager.instance.getGamePlaying())
         {
+            Debug.Log("Interactuo con la puerta");
             ToggleDoor();
         }
         else

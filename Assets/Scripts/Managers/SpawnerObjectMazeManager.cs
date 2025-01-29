@@ -46,6 +46,12 @@ public class SpawnerObjectMazeManager : MonoBehaviour {
 
     public void spawnObjectsInMaze()
     {
+        if (positions.Count <= 0)
+        {
+            Debug.Log("No hay posiciones existentes");
+            return;
+        }
+
         //añadir objetos aleatoriamente en el labertinto // se llamara al empezar el dia // la creacion del laberinto se hace al empezar el juego
         var listKeys = positions.Keys.ToList();
 

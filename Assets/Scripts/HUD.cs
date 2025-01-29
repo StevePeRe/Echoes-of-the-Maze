@@ -12,7 +12,7 @@ using static UnityEditor.Progress;
 public class HUD : MonoBehaviour
 {
     [SerializeField] private Inventory inventory; // para los eventos de Inventario
-    [SerializeField] private GameInput gameInput; // weelMouse
+    private GameInput gameInput; // weelMouse
 
     private Image imageItem;
     [SerializeField] private Transform inventoryItems; // GO del inventario para obtener los SLOTS
@@ -20,6 +20,11 @@ public class HUD : MonoBehaviour
 
     private ICollectable itemOnHand;
     private int selection;
+
+    private void Awake()
+    {
+        gameInput = GameInput.instance;
+    }
 
     // Start is called before the first frame update
     void Start()

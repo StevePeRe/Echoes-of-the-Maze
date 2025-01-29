@@ -11,8 +11,16 @@ public class GameInput : MonoBehaviour
     private Vector2 movementInput;
     PlayerInputActions playerInputActions;
 
+    public static GameInput instance { get; private set; }
+
     private void Awake()
     {
+        if (instance != null)
+        {
+            Debug.LogError("GameInput Instance already exist");
+        }
+        instance = this;
+
         playerInputActions = new PlayerInputActions(); // del nuevo input que he creado, creo la instancia para usarla
         playerInputActions.Player.Enable(); // habilito el input del player
         playerInputActions.Player.Interaction.performed += Interaction_performed; // el nuevo sistema de input puede funcionar tmb con events,
