@@ -10,11 +10,13 @@ using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
 using static UnityEditor.Progress;
+using Cinemachine;
 
 public class Player : NetworkBehaviour
 {
-    [SerializeField] private Transform orientation;
-    private Transform camPosition;
+    //[SerializeField] private Transform orientation;
+    //[SerializeField] private Transform camPosition;
+    private Camera cameraPlayer;
     private GameInput gameInput;
     private float speedPlayer = 4.8f;
     private Vector3 moveDirection;
@@ -33,10 +35,6 @@ public class Player : NetworkBehaviour
     public event EventHandler<OnInventoryItemEventArgs> OnAddItem;
     public event EventHandler OnDropItem;
 
-    // Raycast
-    //[SerializeField] private TextMeshProUGUI messageInterc;
-    //private bool wObject;
-
     public static event EventHandler OnAnyPlayerSpawned; // static ya que queremos que no perternezca a una clase en concreto sino en general
 
     public static Player LocalInstance { get; private set; }
@@ -45,7 +43,6 @@ public class Player : NetworkBehaviour
     {
         gameInput = GameInput.instance;
         cController = GetComponent<CharacterController>(); // busca dentro de donde este el script
-        camPosition = this.transform; //  de moemnto para el error xd
     }
 
     // cuando se inicie la conexion se lanzara este metodo
@@ -54,8 +51,8 @@ public class Player : NetworkBehaviour
         if(IsOwner)
         {
             LocalInstance = this;
+            transform.position = new Vector3(-1f, 16f, -2f); // ponerlo random
         }
-
         OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
     }
 
@@ -97,8 +94,10 @@ public class Player : NetworkBehaviour
     // Dibujado de raycast de la cam
     private void OnDrawGizmos()
     {
+        if(cameraPlayer == null) return;
         Gizmos.color = Color.yellow;
         //Gizmos.DrawLine(camPosition.position, camPosition.position + camPosition.forward * 3f);
+        Gizmos.DrawLine(cameraPlayer.transform.position, cameraPlayer.transform.position + cameraPlayer.transform.forward * 3f);
     }
 
     // Update is called once per frame
@@ -130,7 +129,8 @@ public class Player : NetworkBehaviour
 
         #region movement
         // walk in the direction you are looking
-        moveDirection = orientation.forward * direction.y + orientation.right * direction.x;
+        //moveDirection = orientation.forward * direction.y + orientation.right * direction.x;
+        moveDirection = cameraPlayer.transform.forward * direction.y + cameraPlayer.transform.right * direction.x;
 
         if (cController.isGrounded)
         {
@@ -153,7 +153,8 @@ public class Player : NetworkBehaviour
 
         #region rotation
         // player rotation
-        transform.rotation = orientation.rotation;
+        Vector3 eulerRotation = cameraPlayer.transform.eulerAngles;
+        transform.rotation = Quaternion.Euler(0, eulerRotation.y, 0); // solo rotacion en eje Y
         #endregion
     }
 
@@ -173,7 +174,7 @@ public class Player : NetworkBehaviour
     public MonoBehaviour getRaycastPlayer() 
     {
         // lanzo una sola comprobacion cuando quiera saber que esta viendo el player
-        if (Physics.Raycast(camPosition.position, camPosition.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
+        if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
         {
             return hit.collider.GetComponent<MonoBehaviour>();
         }
@@ -192,12 +193,17 @@ public class Player : NetworkBehaviour
         cController.enabled = true;
     }
 
-    public void setRotation(Quaternion rotation) {
-        this.orientation.rotation = rotation;
-    }
+    //public void setRotation(Quaternion rotation) {
+    //    this.orientation.rotation = rotation;
+    //}
 
-    public void setCMposition(Vector3 CMposition) {
-        camPosition.position = CMposition;
+    //public void setCMposition(Vector3 CMposition)
+    //{
+    //    camPosition.position = CMposition;
+    //}
+    public void setcameraPlayer(Camera cameraP)
+    {
+        cameraPlayer = cameraP;
     }
 
 }
