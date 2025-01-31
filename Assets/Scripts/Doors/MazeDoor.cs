@@ -1,29 +1,29 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+//using System.Collections;
+//using System.Collections.Generic;
+//using UnityEngine;
 
-public class MazeDoor : MonoBehaviour, IInteractuable, IMessageInteraction
-{
-    [SerializeField] private Player player;
-    [SerializeField] Transform movePlayerMaze;
+//public class MazeDoor : MonoBehaviour, IInteractuable, IMessageInteraction
+//{
+//    [SerializeField] private Player player;
+//    [SerializeField] Transform movePlayerMaze;
 
-    void Start()
-    {
-    }
+//    void Start()
+//    {
+//    }
 
-    // Update is called once per frame
-    void Update()
-    {
+//    // Update is called once per frame
+//    void Update()
+//    {
         
-    }
+//    }
 
-    public void Interact()
-    {
-        player.setPosition(movePlayerMaze);
-    }
+//    public void Interact()
+//    {
+//        player.setPosition(movePlayerMaze);
+//    }
 
-    public string getMessageToShow()
-    {
-        return "Abrir: E";
-    }
-}
+//    public string getMessageToShow()
+//    {
+//        return "Abrir: E";
+//    }
+//}

@@ -17,7 +17,7 @@ public class Player : NetworkBehaviour
     //[SerializeField] private Transform orientation;
     //[SerializeField] private Transform camPosition;
     private Camera cameraPlayer;
-    private GameInput gameInput;
+    //private GameInput GameInput.instance;
     private float speedPlayer = 4.8f;
     private Vector3 moveDirection;
 
@@ -32,16 +32,18 @@ public class Player : NetworkBehaviour
     private float targetLocalScaleY;
 
     // Inventory
-    public event EventHandler<OnInventoryItemEventArgs> OnAddItem;
+    //public event EventHandler<OnInventoryItemEventArgs> OnAddItem;
     public event EventHandler OnDropItem;
 
-    public static event EventHandler OnAnyPlayerSpawned; // static ya que queremos que no perternezca a una clase en concreto sino en general
-
     public static Player LocalInstance { get; private set; }
+    public static event EventHandler OnAnyPlayerSpawned;
+
+    public static void ResetStaticData() { 
+        OnAnyPlayerSpawned = null;
+    }
 
     private void Awake()
     {
-        gameInput = GameInput.instance;
         cController = GetComponent<CharacterController>(); // busca dentro de donde este el script
     }
 
@@ -51,8 +53,12 @@ public class Player : NetworkBehaviour
         if(IsOwner)
         {
             LocalInstance = this;
-            transform.position = new Vector3(-1f, 16f, -2f); // ponerlo random
+            
         }
+
+        transform.position = new Vector3(-1f, 16f, -2f); // ponerlo random
+
+        Debug.Log(transform.position + " Player spawn");
         OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
     }
 
@@ -60,8 +66,8 @@ public class Player : NetworkBehaviour
     private void Start()
     {
         // Game Input
-        gameInput.OnInteractionAction += GameInput_OnInteractionAction; // E
-        gameInput.OnDropAction += GameInput_OnDropAction; // G
+        GameInput.instance.OnInteractionAction += GameInput_OnInteractionAction; // E
+        GameInput.instance.OnDropAction += GameInput_OnDropAction; // G
     }
 
     // TODO Cambiar en un futuro refactorizar en otro docuemnto solo interacciones
@@ -76,13 +82,13 @@ public class Player : NetworkBehaviour
         // mas adelante ver si poner esto en el inventario para mejor organizacion
         var monoB = getRaycastPlayer();
 
-        if (monoB is ICollectable collectable)
-        {
-            OnAddItem?.Invoke(this, new OnInventoryItemEventArgs
-            {
-                inventoryItem = collectable
-            });
-        }
+        //if (monoB is ICollectable collectable)
+        //{
+        //    OnAddItem?.Invoke(this, new OnInventoryItemEventArgs
+        //    {
+        //        inventoryItem = collectable
+        //    });
+        //}
 
         if (monoB is IInteractuable interectuable)
         {
@@ -106,7 +112,9 @@ public class Player : NetworkBehaviour
         //// raycast Player
         //messageInteractionsPlayer();
         // movement Player
-        MovementPlayer(gameInput.GetMovementVector(), gameInput.GetJump(), gameInput.GetCrouch(), gameInput.GetSprint());
+        if(!IsOwner) return;
+
+        MovementPlayer(GameInput.instance.GetMovementVector(), GameInput.instance.GetJump(), GameInput.instance.GetCrouch(), GameInput.instance.GetSprint());
     }
 
     private void MovementPlayer(Vector2 direction, bool jump, bool crouch, bool sprint)

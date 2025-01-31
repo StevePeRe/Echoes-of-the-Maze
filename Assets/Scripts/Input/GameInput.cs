@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class GameInput : MonoBehaviour
@@ -12,21 +13,34 @@ public class GameInput : MonoBehaviour
     PlayerInputActions playerInputActions;
 
     public static GameInput instance { get; private set; }
+    //public static GameInput LocalInstance { get; private set; }
 
     private void Awake()
     {
         if (instance != null)
         {
+            Destroy(gameObject);
             Debug.LogError("GameInput Instance already exist");
         }
+        Debug.Log("Entro en GameInput");
         instance = this;
 
+        // no se si afe3cta a todos
         playerInputActions = new PlayerInputActions(); // del nuevo input que he creado, creo la instancia para usarla
         playerInputActions.Player.Enable(); // habilito el input del player
         playerInputActions.Player.Interaction.performed += Interaction_performed; // el nuevo sistema de input puede funcionar tmb con events,
                                                                                   // con esto no tengo que estar todo el rato atento si pulsa la interaccion
         playerInputActions.Player.Drop.performed += Drop_performed;
     }
+
+    //public override void OnNetworkSpawn()
+    //{
+    //    if (IsOwner)
+    //    {
+    //        LocalInstance = this;
+    //    }
+    //    //OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
+    //}
 
     private void Drop_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
@@ -46,6 +60,8 @@ public class GameInput : MonoBehaviour
     public Vector2 GetMovementVector()
     {
         movementInput = playerInputActions.Player.Move.ReadValue<Vector2>();
+
+        
 
         return movementInput.normalized;
     }
