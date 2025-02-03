@@ -10,62 +10,65 @@ using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
 using static UnityEditor.Progress;
-using Cinemachine;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using UnityEngine.InputSystem.LowLevel;
 
 public class Player : NetworkBehaviour
 {
-    //[SerializeField] private Transform orientation;
-    //[SerializeField] private Transform camPosition;
     private Camera cameraPlayer;
-    //private GameInput GameInput.instance;
-    private float speedPlayer = 4.8f;
-    private Vector3 moveDirection;
-
     private CharacterController cController;
-    private Vector3 velocity;
+    
+    // person characteristics
+    [SerializeField] private float smoothCrouch;
     [SerializeField] private float jumpForce;
     [SerializeField] private float gravity = 19.62f;
-
-    // jump
-    [SerializeField] private float smoothCrouch;
+    private float speedPlayer = 4.8f;
+    private Vector3 moveDirection;
     private bool crouch;
     private float targetLocalScaleY;
+    private Vector3 velocity;
 
     // Inventory
-    //public event EventHandler<OnInventoryItemEventArgs> OnAddItem;
-    public event EventHandler OnDropItem;
+    public static event EventHandler<OnInventoryItemEventArgs> OnAddItem;
+    public static event EventHandler OnDropItem;
+    private int MAX_SIZE_iNVENTORY = 3;
+    private ICollectable[] inventPlayer;
 
+    // Player Singleton
     public static Player LocalInstance { get; private set; }
     public static event EventHandler OnAnyPlayerSpawned;
-
     public static void ResetStaticData() { 
         OnAnyPlayerSpawned = null;
+        OnAddItem = null;
+        OnDropItem = null;
     }
 
+    // Methods
+    //IsOwner funciona para cargas como el movimiento y mecanicas que solo tiene que ser instanciadas por un solo jugador
+    //IsClient funciona para clientes en general
+    // cuando se inicie la conexion se lanzara este metodo
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner)
+        {
+            LocalInstance = this;
+            transform.position = new Vector3(UnityEngine.Random.Range(-4f, 1f), 16f, UnityEngine.Random.Range(-5f, -1f));
+        }
+
+        Debug.Log(transform.position + " Player spawn");
+        OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
+    }
     private void Awake()
     {
         cController = GetComponent<CharacterController>(); // busca dentro de donde este el script
     }
 
-    // cuando se inicie la conexion se lanzara este metodo
-    public override void OnNetworkSpawn()
-    {
-        if(IsOwner)
-        {
-            LocalInstance = this;
-            
-        }
-
-        transform.position = new Vector3(-1f, 16f, -2f); // ponerlo random
-
-        Debug.Log(transform.position + " Player spawn");
-        OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
-    }
-
     // Start is called before the first frame update
     private void Start()
     {
-        // Game Input
+        inventPlayer = new ICollectable[MAX_SIZE_iNVENTORY]; // creo que es uno individual para cada uno xd
+
+        // Game Input // no hace falta sync, sirve para los todos los jugadores
         GameInput.instance.OnInteractionAction += GameInput_OnInteractionAction; // E
         GameInput.instance.OnDropAction += GameInput_OnDropAction; // G
     }
@@ -73,44 +76,41 @@ public class Player : NetworkBehaviour
     // TODO Cambiar en un futuro refactorizar en otro docuemnto solo interacciones
     private void GameInput_OnDropAction(object sender, EventArgs e)
     {
+        if (!IsOwner) return;
         OnDropItem?.Invoke(this, EventArgs.Empty);
     }
 
     // Interfaces que intertactuen con la E
     private void GameInput_OnInteractionAction(object sender, EventArgs e)
     {
+        if (!IsOwner) return;
+        //Player player = sender as Player;
+        //if(player == null) return;
         // mas adelante ver si poner esto en el inventario para mejor organizacion
         var monoB = getRaycastPlayer();
 
-        //if (monoB is ICollectable collectable)
-        //{
-        //    OnAddItem?.Invoke(this, new OnInventoryItemEventArgs
-        //    {
-        //        inventoryItem = collectable
-        //    });
-        //}
+        //Debug.Log("Pulso E");
+
+        if (monoB is ICollectable collectable)
+        {
+            OnAddItem?.Invoke(this, new OnInventoryItemEventArgs
+            {
+                inventoryItem = collectable
+            });
+        }
 
         if (monoB is IInteractuable interectuable)
         {
             interectuable.Interact();
         }
-        
-    }
 
-    // Dibujado de raycast de la cam
-    private void OnDrawGizmos()
-    {
-        if(cameraPlayer == null) return;
-        Gizmos.color = Color.yellow;
-        //Gizmos.DrawLine(camPosition.position, camPosition.position + camPosition.forward * 3f);
-        Gizmos.DrawLine(cameraPlayer.transform.position, cameraPlayer.transform.position + cameraPlayer.transform.forward * 3f);
     }
 
     // Update is called once per frame
     private void Update()
     {
         //// raycast Player
-        //messageInteractionsPlayer();
+
         // movement Player
         if(!IsOwner) return;
 
@@ -139,7 +139,6 @@ public class Player : NetworkBehaviour
         // walk in the direction you are looking
         //moveDirection = orientation.forward * direction.y + orientation.right * direction.x;
         moveDirection = cameraPlayer.transform.forward * direction.y + cameraPlayer.transform.right * direction.x;
-
         if (cController.isGrounded)
         {
             #region sprint
@@ -154,7 +153,6 @@ public class Player : NetworkBehaviour
         {
             velocity.y -= gravity * -2f * Time.deltaTime;
         }
-
         cController.Move(moveDirection * speedPlayer * Time.deltaTime);
         cController.Move(velocity * Time.deltaTime);
         #endregion
@@ -166,21 +164,8 @@ public class Player : NetworkBehaviour
         #endregion
     }
 
-    //// TODO mover RAYCAST a otro fichero para mejorar organizacion, colocar ahi todas las interacciones
-    //private void messageInteractionsPlayer()
-    //{
-    //    if(!wObject && messageInterc.text != "") messageInterc.text = ""; // reset text
-    //    wObject = false;
-
-    //    if (getRaycastPlayer() is IMessageInteraction messInteract)
-    //    {
-    //        wObject = true;
-    //        messageInterc.text = messInteract.getMessageToShow();
-    //    }
-    //}
-
     public MonoBehaviour getRaycastPlayer() 
-    {
+    {   
         // lanzo una sola comprobacion cuando quiera saber que esta viendo el player
         if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
         {
@@ -201,17 +186,20 @@ public class Player : NetworkBehaviour
         cController.enabled = true;
     }
 
-    //public void setRotation(Quaternion rotation) {
-    //    this.orientation.rotation = rotation;
-    //}
-
-    //public void setCMposition(Vector3 CMposition)
-    //{
-    //    camPosition.position = CMposition;
-    //}
-    public void setcameraPlayer(Camera cameraP)
+    public void setCameraPlayer(Camera cameraP)
     {
         cameraPlayer = cameraP;
+    }
+
+    public ICollectable[] getInventory() { return inventPlayer; }
+
+    // Dibujado de raycast de la cam
+    private void OnDrawGizmos()
+    {
+        if (cameraPlayer == null) return;
+        Gizmos.color = Color.yellow;
+        //Gizmos.DrawLine(camPosition.position, camPosition.position + camPosition.forward * 3f);
+        Gizmos.DrawLine(cameraPlayer.transform.position, cameraPlayer.transform.position + cameraPlayer.transform.forward * 3f);
     }
 
 }

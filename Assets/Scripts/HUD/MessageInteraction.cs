@@ -18,12 +18,13 @@ public class MessageInteraction : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!IsClient) return;
         messageInteractionsPlayer();
     }
 
     private void messageInteractionsPlayer()
     {
-        if (!IsOwner) return;
+        //Debug.Log("Entro mensaje");
 
         if (!wObject && messageInt.text != "") messageInt.text = ""; // reset text
         wObject = false;
