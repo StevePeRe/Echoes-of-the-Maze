@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Lintern : MonoBehaviour, ICollectable, IMessageInteraction
 {
-    [SerializeField] private Transform handPosition;
-    [SerializeField] private Transform freePos;
+    //[SerializeField] private Transform handPosition;
+    //[SerializeField] private Transform freePos;
     private BoxCollider boxCollider;
     private Rigidbody rb;
+
+    private FollowTransform followTransform;
 
     [SerializeField] private string _name;
     public string Name
@@ -49,16 +51,17 @@ public class Lintern : MonoBehaviour, ICollectable, IMessageInteraction
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        //Debug.Log(costObject);
+        followTransform = GetComponent<FollowTransform>();
     }
 
-    public void CollectItem()
+    public void CollectItem(Transform transf)
     {
         rb.useGravity = false;
         rb.isKinematic = true;
         rb.detectCollisions = false;
-        transform.position = handPosition.position;
-        transform.SetParent(handPosition);
+        followTransform.SetTargetTransform(transf);
+        //transform.position = handPosition.position;
+        //transform.SetParent(handPosition);
     }
 
     public void DropItem()
@@ -66,7 +69,7 @@ public class Lintern : MonoBehaviour, ICollectable, IMessageInteraction
         rb.useGravity = true;
         rb.isKinematic = false;
         rb.detectCollisions = true;
-        transform.SetParent(freePos);
+        transform.SetParent(null);
     }
 
     public void setActive(bool active)

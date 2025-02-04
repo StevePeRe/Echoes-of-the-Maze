@@ -272,9 +272,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5810694b0569f604281b10500b8d5b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  smoothCrouch: 15
   jumpForce: 12
   gravity: -19.62
-  smoothCrouch: 15
+  lintern: {fileID: 129524529196108602, guid: 1d75049467120cb41ab7e012c428f94a, type: 3}
+  polola: {fileID: 5161670510840872600, guid: 86c0c20387e76bc44b589ad5ae1129d7, type: 3}
 --- !u!143 &6042712426350351992
 CharacterController:
   m_ObjectHideFlags: 0

@@ -32,10 +32,11 @@ public class Inventory : MonoBehaviour
 
     private void Player_OnAddItem(object sender, OnInventoryItemEventArgs e)
     {
+        Player player = sender as Player;
         Debug.Log("Add item");
         if (hud.getItemOnHand() == null)
         {
-            e.inventoryItem.CollectItem(); /// hago que desaparezca el item
+            e.inventoryItem.CollectItem(player.transform.GetChild(3)); /// le paso el tranform de la mano del player que ha recogido el objeto
             OnAddInventoryItem?.Invoke(sender, e); // a HUD 
         }
     }

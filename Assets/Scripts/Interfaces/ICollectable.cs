@@ -10,7 +10,7 @@ public interface ICollectable
 
     int WeigthObject { get; }
 
-    public void CollectItem(); // recogerlo
+    public void CollectItem(Transform transf); // recogerlo
 
     public void DropItem(); // soltarlo
 

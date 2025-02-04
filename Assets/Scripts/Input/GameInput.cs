@@ -13,7 +13,6 @@ public class GameInput : MonoBehaviour
     PlayerInputActions playerInputActions;
 
     public static GameInput instance { get; private set; }
-    //public static GameInput LocalInstance { get; private set; }
 
     private void Awake()
     {
@@ -32,15 +31,6 @@ public class GameInput : MonoBehaviour
                                                                                   // con esto no tengo que estar todo el rato atento si pulsa la interaccion
         playerInputActions.Player.Drop.performed += Drop_performed;
     }
-
-    //public override void OnNetworkSpawn()
-    //{
-    //    if (IsOwner)
-    //    {
-    //        LocalInstance = this;
-    //    }
-    //    //OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
-    //}
 
     private void Drop_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {

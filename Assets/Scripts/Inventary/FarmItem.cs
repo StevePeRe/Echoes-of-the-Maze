@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class FarmItem : MonoBehaviour, ICollectable, IMessageInteraction
 {
-    [SerializeField] private Transform handPosition;
-    [SerializeField] private Transform freePos;
+    //[SerializeField] private Transform handPosition;
+    //[SerializeField] private Transform freePos;
 
+    private FollowTransform followTransform;
     private Rigidbody rb;
 
     [SerializeField] private string _name;
@@ -50,16 +51,17 @@ public class FarmItem : MonoBehaviour, ICollectable, IMessageInteraction
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        
+        followTransform = GetComponent<FollowTransform>();
     }
 
-    public void CollectItem()
+    public void CollectItem(Transform transf)
     {
         rb.useGravity = false;
         rb.isKinematic = true;
         rb.detectCollisions = false;
-        transform.position = handPosition.position;
-        transform.SetParent(handPosition);
+        followTransform.SetTargetTransform(transf);
+        //transform.position = handPosition.position;
+        //transform.SetParent(handPosition);
     }
 
     public void DropItem()
@@ -67,7 +69,7 @@ public class FarmItem : MonoBehaviour, ICollectable, IMessageInteraction
         rb.useGravity = true;
         rb.isKinematic = false;
         rb.detectCollisions = true;
-        transform.SetParent(freePos);
+        transform.SetParent(null); // independiente
     }
 
     public void setActive(bool active)

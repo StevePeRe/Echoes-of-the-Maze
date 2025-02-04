@@ -12,13 +12,12 @@ using static UnityEditor.Progress;
 public class HUD : MonoBehaviour
 {
     [SerializeField] private Inventory inventory; // para los eventos de Inventario
-    private GameInput gameInput; // weelMouse
 
     private Image imageItem;
     [SerializeField] private Transform inventoryItems; // GO del inventario para obtener los SLOTS
     private const int MAX_SELECTION = 2; // ver como conectar con lo demas porque quioero poner una mejora de poner mas espacios
 
-    private ICollectable itemOnHand;
+    private ICollectable itemOnHand; // segruamente me toque crearlo en el player, o verificar si sirve para player local
     private int selection;
 
     private void Awake()
@@ -28,10 +27,10 @@ public class HUD : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameInput = GameInput.instance;
-
         itemOnHand = null; // empieza sin item en la mano
+        // sirve para player local
         selection = 0;
+        imageItem = inventoryItems.GetChild(selection).GetChild(0).GetComponent<Image>();
 
         // subs
         Inventory.OnAddInventoryItem += Inventory_OnAddInventoryItem;
@@ -52,7 +51,7 @@ public class HUD : MonoBehaviour
     {
         if (itemOnHand != null)
         {
-            itemOnHand.UseItem(gameInput.GetRigthClickMouse());
+            itemOnHand.UseItem(GameInput.instance.GetRigthClickMouse());
         }
     }
 
@@ -69,7 +68,7 @@ public class HUD : MonoBehaviour
         //#endregion
 
         //#region seleccion item de inventario
-        //Vector2 weelMouse = gameInput.GetMovementWeelMouse();
+        //Vector2 weelMouse = GameInput.instance..GetMovementWeelMouse();
         //if (weelMouse.y > 0) { selection++; }
         //else if (weelMouse.y < 0) { selection--; }
 

@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Netcode;
+//using Unity.Netcode;
 using UnityEngine;
 
-public class MessageInteraction : NetworkBehaviour
+public class MessageInteraction : MonoBehaviour
 {
     private TextMeshProUGUI messageInt;
     private bool wObject;
@@ -18,21 +18,21 @@ public class MessageInteraction : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!IsClient) return;
+        if (Player.LocalInstance == null) return;
         messageInteractionsPlayer();
     }
 
     private void messageInteractionsPlayer()
     {
-        //Debug.Log("Entro mensaje");
-
         if (!wObject && messageInt.text != "") messageInt.text = ""; // reset text
         wObject = false;
 
-        if (Player.LocalInstance.getRaycastPlayer() is IMessageInteraction messInteract)
+        Collider hitPlayer = Player.LocalInstance.getRaycastPlayerGO();
+
+        if (hitPlayer != null && hitPlayer.GetComponent<IMessageInteraction>() is IMessageInteraction message)
         {
             wObject = true;
-            messageInt.text = messInteract.getMessageToShow();
+            messageInt.text = message.getMessageToShow();
         }
     }
 
