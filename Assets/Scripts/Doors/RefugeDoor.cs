@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class RefugeDoor : MonoBehaviour, IInteractuable, IMessageInteraction
+public class RefugeDoor : NetworkBehaviour, IInteractuable, IMessageInteraction
 {
     [SerializeField] private Transform doorHinge; // Punto de rotación de la puerta
     [SerializeField] private float openAngle = 90f; // Ángulo al que se abre la puerta
@@ -55,15 +56,29 @@ public class RefugeDoor : MonoBehaviour, IInteractuable, IMessageInteraction
 
     public void Interact()
     {
-        if(MazeGameManager.instance.getGamePlaying())
+        Debug.Log("Entro interact");
+        if (MazeGameManager.instance.getGamePlaying())
         {
             Debug.Log("Interactuo con la puerta");
-            ToggleDoor();
+            //ToggleDoor();
+            InteractServerRpc();
         }
         else
         {
             Debug.Log("Debes empezar el dia antes");
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
+    private void InteractServerRpc()
+    {
+        InteractClientRpc();
+    }
+
+    [ClientRpc]
+    private void InteractClientRpc()
+    {
+        ToggleDoor();
     }
 
     public string getMessageToShow()

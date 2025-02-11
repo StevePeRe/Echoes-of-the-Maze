@@ -27,7 +27,7 @@ public class MessageInteraction : MonoBehaviour
         if (!wObject && messageInt.text != "") messageInt.text = ""; // reset text
         wObject = false;
 
-        Collider hitPlayer = Player.LocalInstance.getRaycastPlayerGO();
+        Collider hitPlayer = Player.LocalInstance.getRaycastPlayer();
 
         if (hitPlayer != null && hitPlayer.GetComponent<IMessageInteraction>() is IMessageInteraction message)
         {

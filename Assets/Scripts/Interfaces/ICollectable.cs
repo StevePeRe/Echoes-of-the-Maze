@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public interface ICollectable
@@ -10,7 +11,7 @@ public interface ICollectable
 
     int WeigthObject { get; }
 
-    public void CollectItem(Transform transf); // recogerlo
+    public void CollectItem(NetworkObject netObj); // recogerlo
 
     public void DropItem(); // soltarlo
 
@@ -19,4 +20,6 @@ public interface ICollectable
     public void setActive(bool active); // visualizacion en HUD
 
     public void setDestruction(); // destruir el item
+
+    public NetworkObject getNetworkObject();
 }

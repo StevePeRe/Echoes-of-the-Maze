@@ -8,6 +8,6 @@ public class ResetStaticDataManager : MonoBehaviour
     private void Awake()
     {
         Player.ResetStaticData();
-        Inventory.ResetStaticData();
+        //Inventory.ResetStaticData();
     }
 }

@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
-public class FarmItem : MonoBehaviour, ICollectable, IMessageInteraction
+public class FarmItem : NetworkBehaviour, ICollectable, IMessageInteraction
 {
     //[SerializeField] private Transform handPosition;
     //[SerializeField] private Transform freePos;
@@ -54,30 +57,78 @@ public class FarmItem : MonoBehaviour, ICollectable, IMessageInteraction
         followTransform = GetComponent<FollowTransform>();
     }
 
-    public void CollectItem(Transform transf)
+    public void CollectItem(NetworkObject netObj) // le podria pasar por partes el transform, ya que no puedo serializar un tipo compuesto, pero si nativo como position o rotation
+    {
+        CollectItemServerRpc(netObj);
+    }
+
+    [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
+    private void CollectItemServerRpc(NetworkObjectReference netObj)
+    {
+        CollectItemClientRpc(netObj);
+    }
+
+    [ClientRpc]
+    private void CollectItemClientRpc(NetworkObjectReference netObj)
     {
         rb.useGravity = false;
         rb.isKinematic = true;
         rb.detectCollisions = false;
-        followTransform.SetTargetTransform(transf);
-        //transform.position = handPosition.position;
-        //transform.SetParent(handPosition);
+
+        netObj.TryGet(out NetworkObject playerNetworkObject); // obetngo la referencia del objeto de la red 
+        followTransform.SetTargetTransform(playerNetworkObject.gameObject.transform.GetChild(3)/*la pos de la mano*/); // y lo puedo usar para acceder a sus componentes
     }
 
     public void DropItem()
     {
+        DropItemServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
+    private void DropItemServerRpc()
+    {
+        DropItemClientRpc();
+    }
+
+    [ClientRpc]
+    private void DropItemClientRpc()
+    {
         rb.useGravity = true;
         rb.isKinematic = false;
         rb.detectCollisions = true;
-        transform.SetParent(null); // independiente
+        followTransform.SetTargetTransform(null); // al suelo otra vez
     }
 
     public void setActive(bool active)
+    {
+        setActiveServerRpc(active);
+    }
+
+    [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
+    private void setActiveServerRpc(bool active)
+    {
+        setActiveClientRpc(active);
+    }
+
+    [ClientRpc]
+    private void setActiveClientRpc(bool active)
     {
         gameObject.SetActive(active);
     }
 
     public void UseItem(bool use)
+    {
+        useItemServerRpc(use);
+    }
+
+    [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
+    private void useItemServerRpc(bool use)
+    {
+        useItemClientRpc(use);
+    }
+
+    [ClientRpc]
+    private void useItemClientRpc(bool use)
     {
         if (use) { Debug.Log("Uso el objeto " + gameObject.name); }
     }
@@ -86,8 +137,26 @@ public class FarmItem : MonoBehaviour, ICollectable, IMessageInteraction
     {
         return "Coger: E";
     }
+
     public void setDestruction()
     {
+        setDestructionServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
+    private void setDestructionServerRpc()
+    {
+        setDestructionClientRpc();
+    }
+
+    [ClientRpc]
+    private void setDestructionClientRpc()
+    {
         Destroy(gameObject);
+    }
+
+    public NetworkObject getNetworkObject()
+    {
+        return NetworkObject;
     }
 }

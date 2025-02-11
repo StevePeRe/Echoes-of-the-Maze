@@ -32,20 +32,26 @@ public class Player : NetworkBehaviour
     // Inventory
     public static event EventHandler<OnInventoryItemEventArgs> OnAddItem;
     public static event EventHandler OnDropItem;
-    private int MAX_SIZE_iNVENTORY = 3;
-    private ICollectable[] inventPlayer;
+    //public static event EventHandler OnBuyerInteraction;
 
     // pruebas
     public Transform lintern;
     public Transform polola;
+    public Transform door;
 
     // Player Singleton
     public static Player LocalInstance { get; private set; }
     public static event EventHandler OnAnyPlayerSpawned;
-    public static void ResetStaticData() { 
-        OnAnyPlayerSpawned = null;
+    //public static event EventHandler OnAnyPlayerMoveWheelMouse;
+    //public static event EventHandler OnAnyPlayerRightClick;
+
+    public static void ResetStaticData() {
         OnAddItem = null;
         OnDropItem = null;
+        OnAnyPlayerSpawned = null;
+        //OnBuyerInteraction = null;
+        //OnAnyPlayerMoveWheelMouse = null;
+        //OnAnyPlayerRightClick = null;
     }
 
     // Methods
@@ -67,13 +73,16 @@ public class Player : NetworkBehaviour
                 Transform spwObj2 = Instantiate(polola);
                 spwObj2.GetComponent<NetworkObject>().Spawn(true);
                 spwObj2.transform.position = new Vector3(-2.02f, 13.23f, 7.62f);
+
+                //Transform spwObj3 = Instantiate(door);
+                //spwObj3.GetComponent<NetworkObject>().Spawn(true);
+                //spwObj3.transform.position = new Vector3(-2.11f, 14.6f, 1f);
+                
             }
         }
-
-        //Debug.Log(transform.position + " Player spawn");
         OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
-        
     }
+
     private void Awake()
     {
         cController = GetComponent<CharacterController>(); // busca dentro de donde este el script
@@ -82,14 +91,13 @@ public class Player : NetworkBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        inventPlayer = new ICollectable[MAX_SIZE_iNVENTORY]; // creo que es uno individual para cada uno xd
-
         // Game Input // no hace falta sync, sirve para los todos los jugadores
         GameInput.instance.OnInteractionAction += GameInput_OnInteractionAction; // E
         GameInput.instance.OnDropAction += GameInput_OnDropAction; // G
     }
 
     // TODO Cambiar en un futuro refactorizar en otro docuemnto solo interacciones
+    // estos metodos tieneN que estar aqui para saber quien los invoca con el isOwner
     private void GameInput_OnDropAction(object sender, EventArgs e)
     {
         if (!IsOwner) return;
@@ -99,13 +107,11 @@ public class Player : NetworkBehaviour
     // Interfaces que intertactuen con la E
     private void GameInput_OnInteractionAction(object sender, EventArgs e)
     {
+        // Solo pasa la interaccion que ha hecho el jugador propietario
         if (!IsOwner) return;
-        // mas adelante ver si poner esto en el inventario para mejor organizacion
-        //var monoB = getRaycastPlayer();
-        var hitPlayer = getRaycastPlayerGO();
-        
-        if (hitPlayer == null) return;
 
+        var hitPlayer = getRaycastPlayer();
+        if (hitPlayer == null) return;
         //hitPlayer.GetComponent<ICollectable>() is ICollectable collectable -> busca algun componente que posea ese tipo de clase especifica o heredada
         //hitPlayer.GetComponent<ICollectable>()-> solo busca el componente pasado T, si no existe como componente devuele null
 
@@ -122,6 +128,11 @@ public class Player : NetworkBehaviour
             interactuable.Interact();
         }
 
+        //if (hitPlayer.GetComponent<BuyerBehaviour>() is BuyerBehaviour buyer)
+        //{
+        //    UnityEngine.Debug.Log("entro buyer");
+        //    buyer.Interact();
+        //}
     }
 
     // Update is called once per frame
@@ -182,39 +193,39 @@ public class Player : NetworkBehaviour
         #endregion
     }
 
-    public MonoBehaviour getRaycastPlayer() 
-    {
-        //if (!IsClient) return null;
-        // lanzo una sola comprobacion cuando quiera saber que esta viendo el player
-        //if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
-        //{
-        //    //if(hit.collider.GetComponent<MonoBehaviour>() != null)
-        //    //{
-        //    if (hit.collider.TryGetComponent<IMessageInteraction>(out var interactable)) // poniendo directamente lo que busco si lo encuentra e imprimer por pantalla el mesanje
-        //        // pero si pongo monobehaviour no lo encuentra
-        //    {
-        //        //UnityEngine.Debug.Log($"Objeto detectado: {hit.collider.GetComponent<MonoBehaviour>().name}, " +
-        //        //    $"Tipo: {hit.collider.GetComponent<MonoBehaviour>().GetType()}");
-        //        //return hit.collider.GetComponent<MonoBehaviour>();
-        //        return interactable as MonoBehaviour;
-        //    }
-        //}
-        //return null;
+    //public MonoBehaviour getRaycastPlayer() 
+    //{
+    //    //if (!IsClient) return null;
+    //    // lanzo una sola comprobacion cuando quiera saber que esta viendo el player
+    //    //if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
+    //    //{
+    //    //    //if(hit.collider.GetComponent<MonoBehaviour>() != null)
+    //    //    //{
+    //    //    if (hit.collider.TryGetComponent<IMessageInteraction>(out var interactable)) // poniendo directamente lo que busco si lo encuentra e imprimer por pantalla el mesanje
+    //    //        // pero si pongo monobehaviour no lo encuentra
+    //    //    {
+    //    //        //UnityEngine.Debug.Log($"Objeto detectado: {hit.collider.GetComponent<MonoBehaviour>().name}, " +
+    //    //        //    $"Tipo: {hit.collider.GetComponent<MonoBehaviour>().GetType()}");
+    //    //        //return hit.collider.GetComponent<MonoBehaviour>();
+    //    //        return interactable as MonoBehaviour;
+    //    //    }
+    //    //}
+    //    //return null;
 
-        if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
-        {
-            if (hit.collider != null)
-            {
-                //UnityEngine.Debug.Log($"Objeto detectado: {hit.collider.GetComponent<MonoBehaviour>().name}, " +
-                //    $"Tipo: {hit.collider.GetComponent<MonoBehaviour>().GetType()}");
-                return hit.collider.GetComponent<MonoBehaviour>();
-            }
-        }
-        return null;
+    //    if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
+    //    {
+    //        if (hit.collider != null)
+    //        {
+    //            //UnityEngine.Debug.Log($"Objeto detectado: {hit.collider.GetComponent<MonoBehaviour>().name}, " +
+    //            //    $"Tipo: {hit.collider.GetComponent<MonoBehaviour>().GetType()}");
+    //            return hit.collider.GetComponent<MonoBehaviour>();
+    //        }
+    //    }
+    //    return null;
 
-    }
+    //}
 
-    public Collider getRaycastPlayerGO() // de aqui ya obtengo el componente sin null
+    public Collider getRaycastPlayer() // de aqui ya obtengo el componente sin null
     {
         if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
         {
@@ -257,7 +268,14 @@ public class Player : NetworkBehaviour
         cameraPlayer = cameraP;
     }
 
-    public ICollectable[] getInventory() { return inventPlayer; }
+    // Referencia de networkObject del objeto de la red
+    public NetworkObject getNetworkObject()
+    {
+        return NetworkObject;
+    }
+
+    // Inventario
+    //public ICollectable[] getInventory() { return inventPlayer; }
 
     // Dibujado de raycast de la cam
     private void OnDrawGizmos()

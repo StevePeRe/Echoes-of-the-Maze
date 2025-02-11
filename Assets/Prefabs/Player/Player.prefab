@@ -277,6 +277,7 @@ MonoBehaviour:
   gravity: -19.62
   lintern: {fileID: 129524529196108602, guid: 1d75049467120cb41ab7e012c428f94a, type: 3}
   polola: {fileID: 5161670510840872600, guid: 86c0c20387e76bc44b589ad5ae1129d7, type: 3}
+  door: {fileID: 713396467052830040, guid: d3396c659229dea48ae2635134b6be9c, type: 3}
 --- !u!143 &6042712426350351992
 CharacterController:
   m_ObjectHideFlags: 0
