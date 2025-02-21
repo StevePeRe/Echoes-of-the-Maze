@@ -7,6 +7,7 @@ using UnityEngine;
 public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteraction
 {
     //private bool flagCanEndDay;
+    bool aux = false;
 
     // Start is called before the first frame update
     void Start()
@@ -17,7 +18,6 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
     // Update is called once per frame
     void Update()
     {
-
     }
 
     //TODO mejorar logica
@@ -25,9 +25,18 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
     {
         if (!IsClient) // cualquiera puede empezar el dia
         {
-            //Debug.Log("No eres el Host start daybutton.");
             return;
         }
+
+        if (!aux)
+        {
+            aux = true; // pensar que poner en aux para poder volver a pulsar el boton
+            MazeGameManager.instance.generatePreMazeServerRpc();
+            SpawnerObjectMazeManager.instance.spawnObjectsInMaze();
+            //flagCanEndDay = true;
+            Debug.Log("Empieza el dia.");
+        }
+
         // solo poder darle cuando ya has cumplid la cuota
         //if (flagCanEndDay)
         //{
@@ -36,14 +45,6 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
 
         //    flagCanEndDay = false;
         //}
-
-        if (!MazeGameManager.instance.getGamePlaying())
-        {
-            MazeGameManager.instance.setGamePlaying(); // iniciar dia
-            //SpawnerObjectMazeManager.instance.spawnObjectsInMaze(); // spwn objetos aleatorios
-            //flagCanEndDay = true;
-            Debug.Log("Empieza el dia.");
-        }
     }
 
     public string getMessageToShow()

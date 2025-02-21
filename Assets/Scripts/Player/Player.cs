@@ -193,38 +193,6 @@ public class Player : NetworkBehaviour
         #endregion
     }
 
-    //public MonoBehaviour getRaycastPlayer() 
-    //{
-    //    //if (!IsClient) return null;
-    //    // lanzo una sola comprobacion cuando quiera saber que esta viendo el player
-    //    //if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
-    //    //{
-    //    //    //if(hit.collider.GetComponent<MonoBehaviour>() != null)
-    //    //    //{
-    //    //    if (hit.collider.TryGetComponent<IMessageInteraction>(out var interactable)) // poniendo directamente lo que busco si lo encuentra e imprimer por pantalla el mesanje
-    //    //        // pero si pongo monobehaviour no lo encuentra
-    //    //    {
-    //    //        //UnityEngine.Debug.Log($"Objeto detectado: {hit.collider.GetComponent<MonoBehaviour>().name}, " +
-    //    //        //    $"Tipo: {hit.collider.GetComponent<MonoBehaviour>().GetType()}");
-    //    //        //return hit.collider.GetComponent<MonoBehaviour>();
-    //    //        return interactable as MonoBehaviour;
-    //    //    }
-    //    //}
-    //    //return null;
-
-    //    if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
-    //    {
-    //        if (hit.collider != null)
-    //        {
-    //            //UnityEngine.Debug.Log($"Objeto detectado: {hit.collider.GetComponent<MonoBehaviour>().name}, " +
-    //            //    $"Tipo: {hit.collider.GetComponent<MonoBehaviour>().GetType()}");
-    //            return hit.collider.GetComponent<MonoBehaviour>();
-    //        }
-    //    }
-    //    return null;
-
-    //}
-
     public Collider getRaycastPlayer() // de aqui ya obtengo el componente sin null
     {
         if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
@@ -237,26 +205,16 @@ public class Player : NetworkBehaviour
             }
         }
         return null;
-
-        //if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
-        //{
-        //    if (hit.collider != null)
-        //    {
-        //        //UnityEngine.Debug.Log($"Objeto detectado: {hit.collider.GetComponent<MonoBehaviour>().name}, " +
-        //        //    $"Tipo: {hit.collider.GetComponent<MonoBehaviour>().GetType()}");
-        //        return hit.collider.gameObject;
-        //    }
-        //}
-        //return null;
-
     }
 
-    public void setPosition(Transform pos) {
-        cController.enabled = false;
-        transform.position = pos.position;
-        cController.enabled = true;
+    [ServerRpc(RequireOwnership = false)]
+    public void setPositionPlayerServerRpc(Vector3 pos)
+    {
+        setPositionPlayerClientRpc(pos);
     }
-    public void setPosition(Vector3 pos)
+
+    [ClientRpc]
+    public void setPositionPlayerClientRpc(Vector3 pos)
     {
         cController.enabled = false;
         transform.position = pos;

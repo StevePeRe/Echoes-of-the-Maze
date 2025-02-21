@@ -31,34 +31,34 @@ public class DayManager : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!IsServer) // solo el server corre la logica del tiempo del dia
-        {
-            //Debug.Log("No eres el Host.");
-            return;
-        }
+        //if (!IsServer) // solo el server corre la logica del tiempo del dia
+        //{
+        //    //Debug.Log("No eres el Host.");
+        //    return;
+        //}
 
-        if (!MazeGameManager.instance.getGamePlaying()) return;
+        //if (!MazeGameManager.instance.getGamePlaying()) return;
 
-        gamePlayingTimer += Time.deltaTime;
-        //Debug.Log("Tiempo pasado: " + gamePlayingTimer);
+        //gamePlayingTimer += Time.deltaTime;
+        ////Debug.Log("Tiempo pasado: " + gamePlayingTimer);
 
-        // cuando legue al limite, todos los que no esten en el refugio mueren
+        //// cuando llegue al limite, todos los que no esten en el refugio mueren
 
-        if (gamePlayingTimer >= maxTimePerDay/* || goToNextDay*/)
-        {
-            OnGoToNextDay?.Invoke(this, EventArgs.Empty); // avisa a todos los que esten suscritos una solo vez que ha pasado la jornada
+        //if (gamePlayingTimer >= maxTimePerDay/* || goToNextDay*/)
+        //{
+        //    OnGoToNextDay?.Invoke(this, EventArgs.Empty); // avisa a todos los que esten suscritos una solo vez que ha pasado la jornada
 
-            //llamar a estos metodos dentro del script del refugio que es donde se vera si estan todos dentro
-            MazeGameManager.instance.setGeneratePreMaze(); // reiniciar dia
-            //SpawnerObjectMazeManager.instance.resetListPositions(); // resetaer el disc de transform para colocarlos los objetos
-                                                                    // si todos los jugadores no estan en el refugio(crear script de refugio y que le llegue la notificacion) mueren
+        //    //llamar a estos metodos dentro del script del refugio que es donde se vera si estan todos dentro
+        //    MazeGameManager.instance.setGeneratePreMazeServerRpc(); // reiniciar dia
+        //    //SpawnerObjectMazeManager.instance.resetListPositions(); // resetaer el disc de transform para colocarlos los objetos
+        //                                                            // si todos los jugadores no estan en el refugio(crear script de refugio y que le llegue la notificacion) mueren
 
-            // - si se acaba el tiempo se pasa directamente al siguiente dia, viendo quienes estan dentro del refugio y quienes no y comprobando si se ha cumplido la cuota
-            // - si han cumplido la cuota y quieren acabar antes el dia, pueden hacerlo pulsando el boton de nuevo para acabarlo
-            // - no podran pulsar el boton de nuevo a menos que hayan cumplido la quota
-            // - se llevan un plus si cumplen la cuota mucho antes
+        //    // - si se acaba el tiempo se pasa directamente al siguiente dia, viendo quienes estan dentro del refugio y quienes no y comprobando si se ha cumplido la cuota
+        //    // - si han cumplido la cuota y quieren acabar antes el dia, pueden hacerlo pulsando el boton de nuevo para acabarlo
+        //    // - no podran pulsar el boton de nuevo a menos que hayan cumplido la quota
+        //    // - se llevan un plus si cumplen la cuota mucho antes
 
-        }
+        //}
     }
 
     // metodo de escucha al buyer por si se ha cumplido la cuota, asi borra todo y reincia el dia antes de que acabe el tiempo

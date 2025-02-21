@@ -56,7 +56,6 @@ public class RefugeDoor : NetworkBehaviour, IInteractuable, IMessageInteraction
 
     public void Interact()
     {
-        Debug.Log("Entro interact");
         if (MazeGameManager.instance.getGamePlaying())
         {
             Debug.Log("Interactuo con la puerta");

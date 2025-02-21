@@ -1,7 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
+using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 
 public class BuyerBehaviour : NetworkBehaviour, IInteractuable, IMessageInteraction
@@ -9,6 +13,9 @@ public class BuyerBehaviour : NetworkBehaviour, IInteractuable, IMessageInteract
     [SerializeField] private Inventory inventory;
 
     // si son NV solo las puede moficar el servidor por seguridad -> necesario serverRPC
+    // quitar lo de NV porque si quiero compartir una variable entre todos con esto no sirve
+    // solo sirve para que los demas lo vean sincronizada con sus pantallas
+    // Cuando una NetworkVariable existe dentro de un NetworkObject, su valor se mantiene sincronizado en todos los clientes, pero solo dentro del objeto que la contiene.
     NetworkVariable<int> targetQuota = new NetworkVariable<int>(30, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     NetworkVariable<int> ownQuota = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     NetworkVariable<bool> hasReachedQuota = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); // variable multijugador

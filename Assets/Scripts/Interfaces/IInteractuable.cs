@@ -6,6 +6,6 @@ public interface IInteractuable
 {
     public void Interact()
     {
-        Debug.Log("Interactuo clase interface");
+        //Debug.Log("Interactuo clase interface");
     }
 }

@@ -133,8 +133,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44fcc1be0ba1de04ab98859743835684, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handPosition: {fileID: 0}
-  freePos: {fileID: 0}
   _name: Lintern
   _image: {fileID: 21300000, guid: 573a3b4993ac814488d3b7e0977288bb, type: 3}
   _costObject: 2
