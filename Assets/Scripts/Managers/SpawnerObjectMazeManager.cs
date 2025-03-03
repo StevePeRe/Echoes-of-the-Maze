@@ -1,11 +1,7 @@
-using Palmmedia.ReportGenerator.Core;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 // Se llama desde un cliente siempre
 public class SpawnerObjectMazeManager : MonoBehaviour

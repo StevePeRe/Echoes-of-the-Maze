@@ -1,12 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using Unity.Netcode;
-using UnityEditor;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using static UnityEngine.EventSystems.EventTrigger;
-using static UnityEngine.Rendering.DebugUI;
 
 public class BuyerBehaviour : NetworkBehaviour, IInteractuable, IMessageInteraction
 {

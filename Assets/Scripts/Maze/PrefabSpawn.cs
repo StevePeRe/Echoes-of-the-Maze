@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
 // Se llama desde un cliente siempre
 public class PrefabSpawn : MonoBehaviour

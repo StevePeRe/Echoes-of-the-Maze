@@ -1,27 +1,64 @@
 using Kartograph.Entities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MazeGameManager : NetworkBehaviour
 {
-    [SerializeField] LevelGenerator3D generator;
     public static MazeGameManager instance { get; private set; }
+
+    [SerializeField] private Transform playerPrefab;
+    [SerializeField] LevelGenerator3D generator;
+
+    // pruebas
+    public Transform lintern;
+    public Transform polola;
 
     private enum State
     {
-        NONE,
-        GeneratePreMaze,
+        WaitingToStart,
         GamePlaying,
-        GamePaused,
         GameOver // cuando ningun jugador sobrevive
     }
 
     // estado default generar el laberinto
     private State state;
     private int seed;
-    //private int seed = 0;
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            Transform spwObj = Instantiate(lintern);
+            spwObj.GetComponent<NetworkObject>().Spawn(false);
+            spwObj.transform.position = new Vector3(0.02f, 13.23f, 7.62f);
+
+            Transform spwObj2 = Instantiate(polola);
+            spwObj2.GetComponent<NetworkObject>().Spawn(false);
+            spwObj2.transform.position = new Vector3(-2.02f, 13.23f, 7.62f);
+
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted; ; // al unico que le va a cargar la escena de primeras es al host
+            NetworkManager.Singleton.OnClientConnectedCallback += Singleton_OnClientConnectedCallback; // cuando el jugador cliente se conecta
+        }
+    }
+
+    private void SceneManager_OnLoadEventCompleted(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
+    {
+        foreach (ulong clientid in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            Transform playertransform = Instantiate(playerPrefab);
+            playertransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientid);
+        }
+    }
+
+    private void Singleton_OnClientConnectedCallback(ulong clientid)
+    {
+        Transform playertransform = Instantiate(playerPrefab);
+        playertransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientid);
+    }
 
     private void Awake()
     {
@@ -35,7 +72,7 @@ public class MazeGameManager : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        state = State.NONE;
+        state = State.WaitingToStart;
         seed = 0;
     }
 
@@ -50,14 +87,13 @@ public class MazeGameManager : NetworkBehaviour
             //    //seed = Random.Range(-2147483643, 2147483643);
             //    //syncDungeonWithClientsServerRpc(seed);
             //    break;
+            case State.WaitingToStart:
+                //espero hasta que se inicie el dia
+                break;
             case State.GamePlaying:
                 //Debug.Log("estado GamePlaying");
                 // mientras este jugando el contador de daymanager sigue 
                 // mientras estes jugando y no se te acabe el dia
-                break;
-            case State.GamePaused:
-
-                // pausa del juego, muestra HUD de pausa
                 break;
             case State.GameOver:
                 // muestra la muerte de todos, unabreve animacion de que se meten y matan a todos, luego reinicia
@@ -69,7 +105,7 @@ public class MazeGameManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void generatePreMazeServerRpc()
     {
-        seed = Random.Range(-2147483643, 2147483643);
+        seed = UnityEngine.Random.Range(-2147483643, 2147483643);
         generatePreMazeClientRpc(seed);
     }
 
@@ -83,8 +119,8 @@ public class MazeGameManager : NetworkBehaviour
     }
 
     //public bool getGeneratePreMaze() { return state == State.GeneratePreMaze; } // 
+    public bool getWaitingToStart() { return state == State.WaitingToStart; }
     public bool getGamePlaying() {  return state == State.GamePlaying; }
-    public bool getGamePaused() { return state == State.GamePaused; }
     public bool getGameOver() { return state == State.GameOver; }
 
 
@@ -94,8 +130,8 @@ public class MazeGameManager : NetworkBehaviour
 
 
     // local para cada jugador
+    public void setWaitingToStart() { state = State.WaitingToStart; }
     public void setGamePlaying() { state = State.GamePlaying; }
-    public void setGamePaused() { state = State.GamePaused; }
     public void setGameOver() { state = State.GameOver; }
 
 }

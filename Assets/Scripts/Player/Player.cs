@@ -1,18 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
-using TMPro;
-using Unity.VisualScripting;
-using UnityEditor;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.UI;
-using static UnityEditor.Progress;
-using static UnityEditor.Experimental.GraphView.GraphView;
-using UnityEngine.InputSystem.LowLevel;
-using System.Diagnostics;
 
 public class Player : NetworkBehaviour
 {
@@ -34,24 +24,14 @@ public class Player : NetworkBehaviour
     public static event EventHandler OnDropItem;
     //public static event EventHandler OnBuyerInteraction;
 
-    // pruebas
-    public Transform lintern;
-    public Transform polola;
-    public Transform door;
-
     // Player Singleton
     public static Player LocalInstance { get; private set; }
-    public static event EventHandler OnAnyPlayerSpawned;
-    //public static event EventHandler OnAnyPlayerMoveWheelMouse;
-    //public static event EventHandler OnAnyPlayerRightClick;
+    public static event EventHandler OnAnyPlayerSpawned; // cuando la escena cambia, este evento no lo limpiaremos, por ello hay que hacerlo manual en resetStaticData
 
     public static void ResetStaticData() {
         OnAddItem = null;
         OnDropItem = null;
         OnAnyPlayerSpawned = null;
-        //OnBuyerInteraction = null;
-        //OnAnyPlayerMoveWheelMouse = null;
-        //OnAnyPlayerRightClick = null;
     }
 
     // Methods
@@ -64,21 +44,6 @@ public class Player : NetworkBehaviour
         {
             LocalInstance = this;
             transform.position = new Vector3(UnityEngine.Random.Range(-4f, 1f), 16f, UnityEngine.Random.Range(-5f, -1f));
-            if (IsServer)
-            {
-                Transform spwObj = Instantiate(lintern);
-                spwObj.GetComponent<NetworkObject>().Spawn(true);
-                spwObj.transform.position = new Vector3(0.02f, 13.23f, 7.62f);
-
-                Transform spwObj2 = Instantiate(polola);
-                spwObj2.GetComponent<NetworkObject>().Spawn(true);
-                spwObj2.transform.position = new Vector3(-2.02f, 13.23f, 7.62f);
-
-                //Transform spwObj3 = Instantiate(door);
-                //spwObj3.GetComponent<NetworkObject>().Spawn(true);
-                //spwObj3.transform.position = new Vector3(-2.11f, 14.6f, 1f);
-                
-            }
         }
         OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
     }
@@ -127,12 +92,6 @@ public class Player : NetworkBehaviour
         {
             interactuable.Interact();
         }
-
-        //if (hitPlayer.GetComponent<BuyerBehaviour>() is BuyerBehaviour buyer)
-        //{
-        //    UnityEngine.Debug.Log("entro buyer");
-        //    buyer.Interact();
-        //}
     }
 
     // Update is called once per frame
@@ -167,7 +126,8 @@ public class Player : NetworkBehaviour
         #region movement
         // walk in the direction you are looking
         //moveDirection = orientation.forward * direction.y + orientation.right * direction.x;
-        moveDirection = cameraPlayer.transform.forward * direction.y + cameraPlayer.transform.right * direction.x;
+        if (cameraPlayer != null) moveDirection = cameraPlayer.transform.forward * direction.y + cameraPlayer.transform.right * direction.x;
+
         if (cController.isGrounded)
         {
             #region sprint
@@ -188,13 +148,17 @@ public class Player : NetworkBehaviour
 
         #region rotation
         // player rotation
-        Vector3 eulerRotation = cameraPlayer.transform.eulerAngles;
-        transform.rotation = Quaternion.Euler(0, eulerRotation.y, 0); // solo rotacion en eje Y
+        if (cameraPlayer != null) {
+            Vector3 eulerRotation = cameraPlayer.transform.eulerAngles;
+            transform.rotation = Quaternion.Euler(0, eulerRotation.y, 0); // solo rotacion en eje Y
+        }
         #endregion
     }
 
     public Collider getRaycastPlayer() // de aqui ya obtengo el componente sin null
     {
+        if (cameraPlayer == null) return null;
+
         if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out RaycastHit hit, 3f, ~0, QueryTriggerInteraction.Ignore)) // para evitar los trigger
         {
             if (hit.collider != null)
@@ -243,5 +207,11 @@ public class Player : NetworkBehaviour
         //Gizmos.DrawLine(camPosition.position, camPosition.position + camPosition.forward * 3f);
         Gizmos.DrawLine(cameraPlayer.transform.position, cameraPlayer.transform.position + cameraPlayer.transform.forward * 3f);
     }
+
+    //public override void OnDestroy()
+    //{
+    //    GameInput.instance.OnInteractionAction -= GameInput_OnInteractionAction; // E
+    //    GameInput.instance.OnDropAction -= GameInput_OnDropAction; // G
+    //}
 
 }

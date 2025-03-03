@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
-using static UnityEditor.Timeline.Actions.MenuPriority;
 
 // el inventario se puede eliminar y no afectaria al player
 // necesario HUD

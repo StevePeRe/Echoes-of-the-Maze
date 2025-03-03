@@ -8,6 +8,7 @@ public class CMCameraConfig : MonoBehaviour
 {
     private CinemachineVirtualCamera cinemachineC;
 
+    // para que la camara siga al player
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked; // desaparace el mouse

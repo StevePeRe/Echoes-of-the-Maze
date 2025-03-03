@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 
 public class GameInput : MonoBehaviour
@@ -10,6 +9,7 @@ public class GameInput : MonoBehaviour
     public event EventHandler OnDropAction; // G
     public event EventHandler<OnMouseValuesEventArgs> OnWheelMouseAction; // wheel
     public event EventHandler<OnMouseValuesEventArgs> OnRightClickAction; // right click
+    public event EventHandler OnPauseAction; // Esc - P
 
 
     private Vector2 movementInput;
@@ -33,22 +33,38 @@ public class GameInput : MonoBehaviour
 
         playerInputActions = new PlayerInputActions(); // del nuevo input que he creado, creo la instancia para usarla
         playerInputActions.Player.Enable(); // habilito el input del player
+
+        // Mechanics
         playerInputActions.Player.Interaction.performed += Interaction_performed; // el nuevo sistema de input puede funcionar tmb con events,
                                                                                   // con esto no tengo que estar todo el rato atento si pulsa la interaccion
         playerInputActions.Player.Drop.performed += Drop_performed;
-        playerInputActions.Player.WeelMouse.performed += WeelMouse_performed; 
+        playerInputActions.Player.WeelMouse.performed += WeelMouse_performed;
         playerInputActions.Player.UseItem.performed += UseItem_performed;
 
+        // Menu
+        playerInputActions.Player.Pause.performed += Pause_performed;
     }
 
-    public class OnMouseValuesEventArgs : EventArgs
+    private void OnDestroy()
     {
-        public float value;
+        playerInputActions.Player.Interaction.performed -= Interaction_performed; 
+        playerInputActions.Player.Drop.performed -= Drop_performed;
+        playerInputActions.Player.WeelMouse.performed -= WeelMouse_performed;
+        playerInputActions.Player.UseItem.performed -= UseItem_performed;
+        // Menu
+        playerInputActions.Player.Pause.performed -= Pause_performed;
+
+        playerInputActions.Dispose(); // limpia el objeto y libera la memoria
+    }
+
+    private void Pause_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        //Debug.Log("entro en gameinput pause");
+        OnPauseAction?.Invoke(this, EventArgs.Empty);
     }
 
     private void Drop_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
-        
         OnDropAction?.Invoke(this, EventArgs.Empty);
     }
 
@@ -106,4 +122,8 @@ public class GameInput : MonoBehaviour
     //    return playerInputActions.Player.UseItem.triggered;
     //}
 
+}
+public class OnMouseValuesEventArgs : EventArgs
+{
+    public float value;
 }

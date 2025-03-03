@@ -290,6 +290,7 @@ Transform:
   m_Children:
   - {fileID: 2459555630409413908}
   - {fileID: 2619370902085816750}
+  - {fileID: 3039455464147748323}
   - {fileID: 7557336424971554829}
   - {fileID: 1188689181439424404}
   - {fileID: 2148298563582488015}
@@ -333,7 +334,6 @@ Transform:
   - {fileID: 8035540806697292690}
   - {fileID: 5616216378765800487}
   - {fileID: 7737136965843974528}
-  - {fileID: 3039455464147748323}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8472615512076626907
@@ -429,7 +429,7 @@ Transform:
   m_GameObject: {fileID: 3157619992075288514}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5, y: 0, z: 15}
+  m_LocalPosition: {x: -7.5, y: 0, z: 15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -454,7 +454,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 25, y: 0, z: 30}
+  m_Size: {x: 30, y: 0, z: 30}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4563969475409744187
 GameObject:
@@ -1652,7 +1652,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 4364186776219653626}
+    m_TransformParent: {fileID: 8830339557871230585}
     m_Modifications:
     - target: {fileID: 1224682564416402807, guid: be3228bb23627704f9d10fbb869d5e19, type: 3}
       propertyPath: m_LocalPosition.x

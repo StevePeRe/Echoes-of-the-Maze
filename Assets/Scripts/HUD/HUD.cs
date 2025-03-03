@@ -1,12 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static GameInput;
-using static UnityEditor.Experimental.GraphView.GraphView;
-using static UnityEditor.Progress;
 
 
 // necesario Inventario
@@ -112,4 +105,11 @@ public class HUD : MonoBehaviour
             imageItem.sprite = null;
         }
     }
+
+    //private void OnDestroy()
+    //{   
+    //    GameInput.instance.OnWheelMouseAction -= Instance_OnWheelMouseAction;
+    //    GameInput.instance.OnRightClickAction -= Instance_OnRightClickAction;
+    //}
+
 }

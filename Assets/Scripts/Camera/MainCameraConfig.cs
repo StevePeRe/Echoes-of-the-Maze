@@ -1,10 +1,8 @@
-using Cinemachine;
 using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 //using Unity.Netcode;
 using UnityEngine;
 
+// Asignarle la camara al player
 public class MainCameraConfig : MonoBehaviour
 {
     private void Start()
@@ -12,37 +10,27 @@ public class MainCameraConfig : MonoBehaviour
         //Comunicado directo con player, al principio el player es null ya que tengo que crearlo con el boton de host, mas adelante cuando se pase a la escena lo hara automatico y entrara
         //primero en el if
         //pero como no, se suscribe al evento y se queda esperadndo a que un jugador spawnee
-        if (Player.LocalInstance != null)
+        if (Player.LocalInstance != null && GetComponent<Camera>() != null)
         {
             Player.LocalInstance.setCameraPlayer(GetComponent<Camera>());
         }
         else
         {
+            // ver cuantos listeners tiene, no entiendo porque al seguir conectado el host, no le afecta que este evento sea reseteado
             Player.OnAnyPlayerSpawned += Player_OnAnyPlayerSpawned;
         }
     }
 
     private void Player_OnAnyPlayerSpawned(object sender, System.EventArgs e)
     {
-        if (Player.LocalInstance != null)
+        if (Player.LocalInstance != null && GetComponent<Camera>() != null)
         {
             Player.LocalInstance.setCameraPlayer(GetComponent<Camera>());
         }
     }
-    //public override void OnNetworkSpawn() // onNetworkSpawn solo sirve para este objeto, osea que no sirve para todo esta logica 
+
+    //private void OnDestroy()
     //{
-    //    if (!IsOwner) return; si hiciese if (!IsClient) a lo mejor entra en el Player.LocalInstance que no debe, y le coloca la camara del host al segundo que ha entrado
-    //    por ello es mejor hacerlo con evento de cuando un cliente se ha conectado al juegoy colocarle a ese jugador la camara
-
-    //    if (Player.LocalInstance != null)
-    //    {
-    //        Player.LocalInstance.setcameraPlayer(GetComponent<Camera>());
-    //    }
-    //    else 
-    //    {
-    //        Player.OnAnyPlayerSpawned += Player_OnAnyPlayerSpawned;
-    //    }
-
-
+    //    Player.OnAnyPlayerSpawned -= Player_OnAnyPlayerSpawned;
     //}
 }

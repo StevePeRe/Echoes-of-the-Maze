@@ -1,13 +1,19 @@
-using Kartograph.Entities;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteraction
 {
+    public static event EventHandler OnStartDay;
+
     //private bool flagCanEndDay;
     bool aux = false;
+
+    public static void ResetStaticData()
+    {
+        OnStartDay = null;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -28,7 +34,7 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
             return;
         }
 
-        if (!aux)
+        if (MazeGameManager.instance.getWaitingToStart()) // cuando se acabe el dia vuelve a este estado
         {
             aux = true; // pensar que poner en aux para poder volver a pulsar el boton
             MazeGameManager.instance.generatePreMazeServerRpc();
@@ -45,6 +51,18 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
 
         //    flagCanEndDay = false;
         //}
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void sendEventsServerRpc()
+    {
+        sendEventsClientRpc();
+    }
+
+    [ClientRpc]
+    private void sendEventsClientRpc()
+    {
+        OnStartDay?.Invoke(this, EventArgs.Empty);
     }
 
     public string getMessageToShow()
