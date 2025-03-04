@@ -24,6 +24,7 @@ public class LobbyInformationUI : MonoBehaviour
 
     private void StartDayButton_OnStartDay(object sender, System.EventArgs e)
     {
+        Debug.Log("entro en eventoOOO");
         hide();
     }
 

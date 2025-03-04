@@ -23,7 +23,11 @@ public class MazeGameLobby : MonoBehaviour
     private Lobby joinedLobby;
     private float hearbeatTimer;
     private float listLobbiesTimer;
-    
+
+    public event EventHandler OnLobbyCreateStarted; 
+    public event EventHandler OnLobbyCreateFailed; 
+    public event EventHandler OnLobbyJoinStarted; 
+    public event EventHandler OnLobbyJoinFailed; 
 
     public event EventHandler<OnLobbyListChangedEventArgs> OnLobbyListChanged;
     public class OnLobbyListChangedEventArgs : EventArgs
@@ -130,6 +134,7 @@ public class MazeGameLobby : MonoBehaviour
 
     public async void CreateLobby(string lobbyName, bool isPrivate)
     {
+        OnLobbyCreateStarted?.Invoke(this, EventArgs.Empty);
         try
         {
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, 4, new CreateLobbyOptions
@@ -157,6 +162,7 @@ public class MazeGameLobby : MonoBehaviour
 
         } catch (LobbyServiceException e)
         {
+            OnLobbyCreateFailed?.Invoke(this, EventArgs.Empty);
             Debug.Log(e);
         }
         
@@ -164,6 +170,7 @@ public class MazeGameLobby : MonoBehaviour
 
     public async void QuickJoin()
     {
+        OnLobbyJoinStarted?.Invoke(this, EventArgs.Empty);
         try { 
             joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
 
@@ -176,12 +183,14 @@ public class MazeGameLobby : MonoBehaviour
             MazeGameMultiplayer.Instance.StartClient();
         } catch (LobbyServiceException e)
         {
+            OnLobbyJoinFailed?.Invoke(this, EventArgs.Empty);
             Debug.Log(e);
         }
     }
 
     public async void joinWithCode(string lobbyCode)
     {
+        OnLobbyJoinStarted?.Invoke(this, EventArgs.Empty);
         try
         {
             joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
@@ -196,6 +205,7 @@ public class MazeGameLobby : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
+            OnLobbyJoinFailed?.Invoke(this, EventArgs.Empty);
             Debug.Log(e);
         }
         
@@ -203,6 +213,7 @@ public class MazeGameLobby : MonoBehaviour
 
     public async void joinWithId(string lobbyId)
     {
+        OnLobbyJoinStarted?.Invoke(this, EventArgs.Empty);
         try
         {
             joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
@@ -217,6 +228,7 @@ public class MazeGameLobby : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
+            OnLobbyJoinFailed?.Invoke(this, EventArgs.Empty);
             Debug.Log(e);
         }
 

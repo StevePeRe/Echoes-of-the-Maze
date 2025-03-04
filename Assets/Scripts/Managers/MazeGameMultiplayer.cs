@@ -18,6 +18,8 @@ public class MazeGameMultiplayer : NetworkBehaviour
         DontDestroyOnLoad(gameObject); // no se destruye al pasar de escenas
     }
 
+    
+
     public void StartHost()
     {
         NetworkManager.Singleton.StartHost();

@@ -39,6 +39,7 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
             aux = true; // pensar que poner en aux para poder volver a pulsar el boton
             MazeGameManager.instance.generatePreMazeServerRpc();
             SpawnerObjectMazeManager.instance.spawnObjectsInMaze();
+            sendEventsServerRpc();
             //flagCanEndDay = true;
             Debug.Log("Empieza el dia.");
         }
