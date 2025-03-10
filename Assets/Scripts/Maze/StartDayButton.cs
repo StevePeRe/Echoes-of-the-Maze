@@ -40,8 +40,12 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
             MazeGameManager.instance.generatePreMazeServerRpc();
             SpawnerObjectMazeManager.instance.spawnObjectsInMaze();
             sendEventsServerRpc();
+            MazeGameLobby.Instance.deleteLobby(); // borro lobby al empezar la partida
             //flagCanEndDay = true;
             Debug.Log("Empieza el dia.");
+        } else
+        {
+            //send message day its alkready started
         }
 
         // solo poder darle cuando ya has cumplid la cuota

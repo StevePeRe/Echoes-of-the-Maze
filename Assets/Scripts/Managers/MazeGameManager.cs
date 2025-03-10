@@ -13,6 +13,8 @@ public class MazeGameManager : NetworkBehaviour
     [SerializeField] private Transform playerPrefab;
     [SerializeField] LevelGenerator3D generator;
 
+    //[SerializeField] private Section prefab;
+
     // pruebas
     public Transform lintern;
     public Transform polola;
@@ -32,20 +34,20 @@ public class MazeGameManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            Transform spwObj = Instantiate(lintern);
-            spwObj.GetComponent<NetworkObject>().Spawn(false);
-            spwObj.transform.position = new Vector3(0.02f, 13.23f, 7.62f);
+            //Transform spwObj = Instantiate(lintern);
+            //spwObj.GetComponent<NetworkObject>().Spawn(false);
+            //spwObj.transform.position = new Vector3(0.02f, 13.23f, 7.62f);
 
-            Transform spwObj2 = Instantiate(polola);
-            spwObj2.GetComponent<NetworkObject>().Spawn(false);
-            spwObj2.transform.position = new Vector3(-2.02f, 13.23f, 7.62f);
+            //Transform spwObj2 = Instantiate(polola);
+            //spwObj2.GetComponent<NetworkObject>().Spawn(false);
+            //spwObj2.transform.position = new Vector3(-2.02f, 13.23f, 7.62f);
 
-            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted; ; // al unico que le va a cargar la escena de primeras es al host
-            NetworkManager.Singleton.OnClientConnectedCallback += Singleton_OnClientConnectedCallback; // cuando el jugador cliente se conecta
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += NetworkManager_OnLoadEventCompleted; ; // al unico que le va a cargar la escena de primeras es al host
+            NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback; // cuando el jugador cliente se conecta
         }
     }
 
-    private void SceneManager_OnLoadEventCompleted(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
+    private void NetworkManager_OnLoadEventCompleted(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
     {
         foreach (ulong clientid in NetworkManager.Singleton.ConnectedClientsIds)
         {
@@ -54,7 +56,7 @@ public class MazeGameManager : NetworkBehaviour
         }
     }
 
-    private void Singleton_OnClientConnectedCallback(ulong clientid)
+    private void NetworkManager_OnClientConnectedCallback(ulong clientid)
     {
         Transform playertransform = Instantiate(playerPrefab);
         playertransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientid);
@@ -80,7 +82,9 @@ public class MazeGameManager : NetworkBehaviour
     void Update()
     {
         if (!IsClient) return;
-        
+
+        //generator.RegisterNewSection(prefab);
+
         switch (state) {
             //case State.GeneratePreMaze:
             //    Debug.Log("estado generatePreMaze");

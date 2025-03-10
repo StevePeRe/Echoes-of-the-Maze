@@ -97,8 +97,6 @@ public class Player : NetworkBehaviour
     // Update is called once per frame
     private void Update()
     {
-        //// raycast Player
-
         // movement Player
         if(!IsOwner) return;
 
@@ -124,10 +122,13 @@ public class Player : NetworkBehaviour
         #endregion
 
         #region movement
-        // walk in the direction you are looking
-        //moveDirection = orientation.forward * direction.y + orientation.right * direction.x;
-        if (cameraPlayer != null) moveDirection = cameraPlayer.transform.forward * direction.y + cameraPlayer.transform.right * direction.x;
-
+        Vector3 forward = cameraPlayer.transform.forward;
+        Vector3 right = cameraPlayer.transform.right;
+        forward.y = 0;
+        right.y = 0;
+        forward.Normalize();
+        right.Normalize();
+        if (cameraPlayer != null) moveDirection = forward * direction.y + right * direction.x;
         if (cController.isGrounded)
         {
             #region sprint
@@ -140,8 +141,10 @@ public class Player : NetworkBehaviour
         }
         else
         {
+            speedPlayer = sprint ? 8f : 4.8f;
             velocity.y -= gravity * -2f * Time.deltaTime;
         }
+        
         cController.Move(moveDirection * speedPlayer * Time.deltaTime);
         cController.Move(velocity * Time.deltaTime);
         #endregion

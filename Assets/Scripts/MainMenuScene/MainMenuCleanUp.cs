@@ -17,5 +17,6 @@ public class MainMenuCleanUp : MonoBehaviour
         // RESET STATIC DATA - para limpiar las subs y que no se lance el evento el doble
         Player.ResetStaticData();
         StartDayButton.ResetStaticData();
+        MazeGameMultiplayer.ResetStaticData();
     }
 }

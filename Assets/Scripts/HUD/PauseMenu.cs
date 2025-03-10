@@ -21,8 +21,8 @@ public class PauseMenu : MonoBehaviour
 
         quitButton.onClick.AddListener(() =>
         {
-            NetworkManager.Singleton.Shutdown();
             MazeGameLobby.Instance.leaveLobby(); // dejar la lobby
+            NetworkManager.Singleton.Shutdown();
             Loader.Load(Loader.Scene.MainMenuScene);
         });
     }
