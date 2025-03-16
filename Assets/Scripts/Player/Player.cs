@@ -43,7 +43,7 @@ public class Player : NetworkBehaviour
         if (IsOwner)
         {
             LocalInstance = this;
-            transform.position = new Vector3(UnityEngine.Random.Range(-4f, 1f), 16f, UnityEngine.Random.Range(-5f, -1f));
+            transform.position = new Vector3(UnityEngine.Random.Range(-4f, 1f), 16f, UnityEngine.Random.Range(-5f, -1f)); // poner pos fijas a cada jugador
         }
         OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
     }
@@ -181,7 +181,7 @@ public class Player : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void setPositionPlayerClientRpc(Vector3 pos)
+    private void setPositionPlayerClientRpc(Vector3 pos)
     {
         cController.enabled = false;
         transform.position = pos;

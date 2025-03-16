@@ -1,33 +1,32 @@
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
 public class BuyerBehaviour : NetworkBehaviour, IInteractuable, IMessageInteraction
 {
     [SerializeField] private Inventory inventory;
+    [SerializeField] private TextMeshPro quotaT;
 
-    // si son NV solo las puede moficar el servidor por seguridad -> necesario serverRPC
-    // quitar lo de NV porque si quiero compartir una variable entre todos con esto no sirve
-    // solo sirve para que los demas lo vean sincronizada con sus pantallas
-    // Cuando una NetworkVariable existe dentro de un NetworkObject, su valor se mantiene sincronizado en todos los clientes, pero solo dentro del objeto que la contiene.
-    NetworkVariable<int> targetQuota = new NetworkVariable<int>(30, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    NetworkVariable<int> ownQuota = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    NetworkVariable<bool> hasReachedQuota = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); // variable multijugador
+    int targetQuota;
+    int ownQuota;
+    bool hasReachedQuota; 
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
+        targetQuota = 30;
+        ownQuota = 0;
+        hasReachedQuota = false;
+        quotaT.text = "Quota: " + ownQuota + "/" + targetQuota;
     }
 
     public void Interact()
     {
-        if (hasReachedQuota.Value)
+        if (hasReachedQuota)
         {
             Debug.Log("Has alcanzado la cuota del dia");
             return;
         }
 
-        //Debug.Log("entrewgo objeto a vendedor");
-        //BuyerBehaviourServerRpc();
         ICollectable auxCollect = inventory.getItemOnHand();
         if (auxCollect != null)
         {
@@ -36,12 +35,11 @@ public class BuyerBehaviour : NetworkBehaviour, IInteractuable, IMessageInteract
             inventory.eraseItemFromInventory(); // borro el item del inventario
             auxCollect.setActive(false); // destruir objeto al entregarlo
 
-            Debug.Log("Llevas " + ownQuota.Value + " cantidad de " + targetQuota.Value);
-            if (ownQuota.Value >= targetQuota.Value)
+            
+            if (ownQuota >= targetQuota)
             {
                 quotaReachedServerRpc(true); // enviar mensaje al dayamaneger para que se pueda pasar de dia al ya tener toda la cuota
-                decreaseQuotaServerRpc(targetQuota.Value);
-                //ownQuota.Value -= targetQuota.Value; // el sobrante para el siguiente dia
+                decreaseQuotaServerRpc(targetQuota); // el sobrante para el siguiente dia
                 increaseTargetQuotaServerRpc(); // aumentarla para cuando se pase de dia
             }
         }
@@ -60,26 +58,24 @@ public class BuyerBehaviour : NetworkBehaviour, IInteractuable, IMessageInteract
     [ClientRpc]
     private void quotaReachedClientRpc(bool value)
     {
-        hasReachedQuota.Value = value;
+        hasReachedQuota = value;
     }
 
     // IncreaseQuota
     [ServerRpc(RequireOwnership = false)] // Permite que cualquier cliente lo llame
     public void increaseQuotaServerRpc(int amount)
     {
-        Debug.Log("Value: " + amount);
-        ownQuota.Value += amount;
-        Debug.Log("ownQuota: " + ownQuota.Value);
-        //increaseQuotaClientRpc(amount);
+        increaseQuotaClientRpc(amount);
     }
     [ClientRpc]
     private void increaseQuotaClientRpc(int amount)
     {
-        Debug.Log("Value: " + amount);
-        ownQuota.Value += amount;
+        ownQuota += amount;
+        quotaT.text = "Quota: " + ownQuota + "/" + targetQuota;
+        Debug.Log("Llevas " + ownQuota + " cantidad de " + targetQuota);
     }
 
-    // DecreaseQuota
+    // DecreaseQuota - cuota sobrante para el siguiente dia
     [ServerRpc(RequireOwnership = false)] // Permite que cualquier cliente lo llame
     public void decreaseQuotaServerRpc(int amount)
     {
@@ -88,7 +84,7 @@ public class BuyerBehaviour : NetworkBehaviour, IInteractuable, IMessageInteract
     [ClientRpc]
     private void decreaseQuotaClientRpc(int amount)
     {
-        ownQuota.Value -= amount;
+        ownQuota -= amount;
     }
 
     // TargetQuota
@@ -100,7 +96,7 @@ public class BuyerBehaviour : NetworkBehaviour, IInteractuable, IMessageInteract
     [ClientRpc]
     private void increaseTargetQuotaClientRpc()
     {
-        targetQuota.Value = +Random.Range(16, 42);
+        targetQuota = +Random.Range(16, 42);
     }
 
     public string getMessageToShow()
@@ -109,10 +105,6 @@ public class BuyerBehaviour : NetworkBehaviour, IInteractuable, IMessageInteract
     }
     public bool getHasReachedQuota()
     {
-        return hasReachedQuota.Value;
+        return hasReachedQuota;
     }
-    //private void increaseTargetQuota()
-    //{
-    //    targetQuota.Value = +Random.Range(16, 42);
-    //}
 }

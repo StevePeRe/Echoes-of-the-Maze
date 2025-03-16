@@ -37,9 +37,10 @@ public class SpawnerObjectMazeManager : MonoBehaviour
     {
     }
 
+    // Siempre lo llama solo el server
     public void spawnObjectsInMaze()
     {
-        if (listPositions.Count <= 0 && objectsList.Count <= 0)
+        if (listPositions.Count <= 0 || objectsList.Count <= 0)
         {
             Debug.Log("No hay posiciones existentes u objetos en la lista");
             return;
@@ -50,11 +51,9 @@ public class SpawnerObjectMazeManager : MonoBehaviour
         while (objectsSpawned < objectsToSpawn) 
         {
             gameObjectAux = getRandomWeightedItem(objectsList);
-
+            Debug.Log("objectsSpawned: " + objectsSpawned);
             GameObject spwObj = Instantiate(gameObjectAux, listPositions[objectsSpawned].position, listPositions[objectsSpawned].rotation);
             spwObj.GetComponent<NetworkObject>().Spawn(true);
-            Debug.Log("nombre: " + spwObj.name);
-
             objectsSpawned++;
 
             if (objectsSpawned >= listPositions.Count) break; // evita errores al no haber mas posiciones que objetos a spawnear

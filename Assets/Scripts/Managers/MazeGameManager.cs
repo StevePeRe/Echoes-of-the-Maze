@@ -107,19 +107,27 @@ public class MazeGameManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void generatePreMazeServerRpc()
+    public void generatePreMazeServerRpc(ServerRpcParams rpcParams = default)
     {
+        MazeGameLobby.Instance.deleteLobby(); // elimino la lobby al empezar el dia y generar el maze
         seed = UnityEngine.Random.Range(-2147483643, 2147483643);
-        generatePreMazeClientRpc(seed);
+        generatePreMazeClientRpc(seed, rpcParams.Receive.SenderClientId);
     }
 
     [ClientRpc]
-    private void generatePreMazeClientRpc(int seed)
+    private void generatePreMazeClientRpc(int seed, ulong clientId, ClientRpcParams clientRpcParams = default)
     {
         state = State.GamePlaying;
-        //Debug.Log("estado: " + state);
         generator.SetSeed(seed);
-        generator.Generate(() => { Debug.Log("despues de generar maze"); });
+        generator.Generate(() =>
+        {
+            Debug.Log("despues de generar maze");
+            // el spawn de objetos en el maze solo lo hace el servidor
+            if (IsServer)
+            {
+                SpawnerObjectMazeManager.instance.spawnObjectsInMaze();
+            }
+        });
     }
 
     //public bool getGeneratePreMaze() { return state == State.GeneratePreMaze; } // 

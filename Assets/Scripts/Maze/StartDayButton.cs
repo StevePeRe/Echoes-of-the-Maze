@@ -36,13 +36,11 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
 
         if (MazeGameManager.instance.getWaitingToStart()) // cuando se acabe el dia vuelve a este estado
         {
-            aux = true; // pensar que poner en aux para poder volver a pulsar el boton
             MazeGameManager.instance.generatePreMazeServerRpc();
-            SpawnerObjectMazeManager.instance.spawnObjectsInMaze();
+            //Debug.Log("paso al siguiente metodo");
+            //SpawnerObjectMazeManager.instance.spawnObjectsInMaze();
             sendEventsServerRpc();
-            MazeGameLobby.Instance.deleteLobby(); // borro lobby al empezar la partida
             //flagCanEndDay = true;
-            Debug.Log("Empieza el dia.");
         } else
         {
             //send message day its alkready started

@@ -7,6 +7,12 @@ using UnityEngine;
 public class CMCameraConfig : MonoBehaviour
 {
     private CinemachineVirtualCamera cinemachineC;
+    private CinemachineInputProvider inputCamera;
+
+    private void Awake()
+    {
+        inputCamera = GetComponent<CinemachineInputProvider>();
+    }
 
     // para que la camara siga al player
     private void Start()
@@ -27,6 +33,26 @@ public class CMCameraConfig : MonoBehaviour
         {
             Player.OnAnyPlayerSpawned += Player_OnAnyPlayerSpawned;
         }
+
+        // Al pausar el juego, la camara se desactiva
+        PauseMenu.instance.OnAblePauseAction += PauseMenu_OnAblePauseAction;
+        PauseMenu.instance.OnDisablePauseAction += PauseMenu_OnDisablePauseAction;
+    }
+
+    private void PauseMenu_OnAblePauseAction(object sender, System.EventArgs e)
+    {
+        if (inputCamera != null)
+        {
+            inputCamera.enabled = false; // Desactivar el componente de entrada de la cámara
+        }
+    }
+
+    private void PauseMenu_OnDisablePauseAction(object sender, System.EventArgs e)
+    {
+        if (inputCamera != null)
+        {
+            inputCamera.enabled = true; // Reactivar el componente de entrada de la cámara
+        }
     }
 
     private void Player_OnAnyPlayerSpawned(object sender, System.EventArgs e)
@@ -41,14 +67,4 @@ public class CMCameraConfig : MonoBehaviour
             }
         }
     }
-
-    //// Start is called before the first frame update
-    //// De esta forma cada camara sigue a su propio cliente
-    //public override void OnNetworkSpawn()
-    //{
-    //    if (!IsOwner || Player.LocalInstance == null) return;
-       
-        
-    //}
-
 }

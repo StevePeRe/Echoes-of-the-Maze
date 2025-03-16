@@ -1,51 +1,81 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 
-public class EscapePipe : MonoBehaviour/*, IInteractuable, IMessageInteraction*/
+public class EscapePipe : NetworkBehaviour, IInteractuable, IMessageInteraction
 {
-    //Player auxPlayer;
-    //// Start is called before the first frame update
-    //void Start()
-    //{
-        
-    //}
+    private bool isCooldown = false;
+    private const float cooldownTimeMAX = 30f;
+    private float cooldownTime;
+    [SerializeField] private TextMeshPro cooldownT;
 
-    //// Update is called once per frame
-    //void Update()
-    //{
-        
-    //}
+    private void Awake()
+    {
+        cooldownT.text = "";
+        cooldownTime = cooldownTimeMAX;
+    }
 
-    //public void Interact()
-    //{
-    //    if (auxPlayer != null) 
-    //    {
-    //        auxPlayer.setPosition(new Vector3(-6f, 1.71f, -5.55f));
-    //    }
-    //}
+    private void Update()
+    {
+        if (isCooldown)
+        {
+            cooldownTime -= Time.deltaTime; // si lo pongo dentro de clientrpc el tiempo se vuelve loco ya que depende de cada pc del cliente
+            setTimeCooldownServerRpc();
+        }
+    }
+    public void Interact()
+    {
+        if (isCooldown)
+        {
+            Debug.Log("Interact is on cooldown.");
+            return;
+        }
 
-    //public string getMessageToShow()
-    //{
-    //    return "Usar: E";
-    //}
+        if (Player.LocalInstance != null)
+        {
+            Player.LocalInstance.setPositionPlayerServerRpc(new Vector3(-2.2f, 20.12f, -5.55f));
+            setCooldownServerRpc();
+        }
+    }
 
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    var player = other.GetComponent<Player>();
-    //    if (player) 
-    //    {
-    //        auxPlayer = player;
-            
-    //    }
-    //}
-    //private void OnTriggerExit(Collider other)
-    //{
-    //    var player = other.GetComponent<Player>();
-    //    if (player)
-    //    {
-    //        auxPlayer = null;
-    //    }
-    //}
+    // Tiempo del Cooldown
+    [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
+    private void setTimeCooldownServerRpc()
+    {
+        setTimeCooldownClientRpc();
+    }
 
+    [ClientRpc]
+    private void setTimeCooldownClientRpc()
+    {
+        cooldownT.text = Mathf.Ceil(cooldownTime).ToString();
+
+        if (cooldownTime <= 0)
+        {
+            cooldownTime = cooldownTimeMAX;
+            cooldownT.text = "";
+            isCooldown = false;
+        }
+    }
+
+    // Empezar Cooldown
+    [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
+    private void setCooldownServerRpc()
+    {
+        setCooldownClientRpc();
+    }
+
+    [ClientRpc]
+    private void setCooldownClientRpc()
+    {
+        isCooldown = true;
+    }
+
+    public string getMessageToShow()
+    {
+        return "Usar: E";
+    }
 }
+
