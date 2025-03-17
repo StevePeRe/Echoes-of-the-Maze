@@ -27,7 +27,6 @@ public class PauseMenu : MonoBehaviour
 
         resumeButton.onClick.AddListener(() =>
         {
-            Debug.Log("quito pause");
             hide();
             Cursor.lockState = CursorLockMode.Locked; // desaparace el mouse
             Cursor.visible = false;
@@ -52,7 +51,6 @@ public class PauseMenu : MonoBehaviour
     private void GameInput_OnPauseAction(object sender, System.EventArgs e)
     {
         pause = !pause;
-        Debug.Log("pause: " + pause);
         if (pause)
         {
             show();

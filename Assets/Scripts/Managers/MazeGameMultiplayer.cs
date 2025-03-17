@@ -36,11 +36,13 @@ public class MazeGameMultiplayer : NetworkBehaviour
         //    NetworkManager.Singleton.Shutdown();
         //    Loader.Load(Loader.Scene.MainMenuScene);
         //}
-
-        if (clientId == NetworkManager.ServerClientId)
+        if (clientId == NetworkManager.Singleton.LocalClientId)
         {
             Debug.Log("trato de desconectarme: " + clientId);
             OnDisconnectHostAction?.Invoke(this, EventArgs.Empty);
+            MazeGameLobby.Instance.leaveLobby(); // dejar la lobby
+            NetworkManager.Singleton.Shutdown();
+            Loader.Load(Loader.Scene.MainMenuScene);
         }
     }
 

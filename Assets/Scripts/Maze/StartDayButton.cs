@@ -7,23 +7,9 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
 {
     public static event EventHandler OnStartDay;
 
-    //private bool flagCanEndDay;
-    bool aux = false;
-
     public static void ResetStaticData()
     {
         OnStartDay = null;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        //flagCanEndDay = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 
     //TODO mejorar logica
@@ -37,23 +23,11 @@ public class StartDayButton : NetworkBehaviour, IInteractuable, IMessageInteract
         if (MazeGameManager.instance.getWaitingToStart()) // cuando se acabe el dia vuelve a este estado
         {
             MazeGameManager.instance.generatePreMazeServerRpc();
-            //Debug.Log("paso al siguiente metodo");
-            //SpawnerObjectMazeManager.instance.spawnObjectsInMaze();
             sendEventsServerRpc();
-            //flagCanEndDay = true;
         } else
         {
             //send message day its alkready started
         }
-
-        // solo poder darle cuando ya has cumplid la cuota
-        //if (flagCanEndDay)
-        //{
-        //    MazeGameManager.instance.setGeneratePreMaze(); // reiniciar dia
-        //    SpawnerObjectMazeManager.instance.resetListPositions(); // resetaer el disc de transform para colocarlos los objetos
-
-        //    flagCanEndDay = false;
-        //}
     }
 
     [ServerRpc(RequireOwnership = false)]

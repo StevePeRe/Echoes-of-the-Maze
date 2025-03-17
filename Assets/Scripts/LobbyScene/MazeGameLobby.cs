@@ -218,6 +218,8 @@ public class MazeGameLobby : MonoBehaviour
         {
             joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
             
+            //TODO ESTO PUEDE dar fallo con la recoleccion del valor del codigo de relay si el cliente se conecta muy rapido
+
             // Relay 
             string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
             JoinAllocation joinAllocation = await joinRelay(relayJoinCode);

@@ -105,11 +105,4 @@ public class HUD : MonoBehaviour
             imageItem.sprite = null;
         }
     }
-
-    //private void OnDestroy()
-    //{   
-    //    GameInput.instance.OnWheelMouseAction -= Instance_OnWheelMouseAction;
-    //    GameInput.instance.OnRightClickAction -= Instance_OnRightClickAction;
-    //}
-
 }
