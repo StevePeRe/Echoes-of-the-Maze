@@ -2604,7 +2604,7 @@ Transform:
   m_GameObject: {fileID: 585330410}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.43, y: 3.39, z: 19.46}
+  m_LocalPosition: {x: 1, y: 3.39, z: 16.04}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2645,7 +2645,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.7222161, b: 0.1273585, a: 1}
-  m_Intensity: 20
+  m_Intensity: 80
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -3393,6 +3393,7 @@ GameObject:
   m_Component:
   - component: {fileID: 747819743}
   - component: {fileID: 747819742}
+  - component: {fileID: 747819744}
   m_Layer: 0
   m_Name: MazeGenerator
   m_TagString: Untagged
@@ -3445,6 +3446,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &747819744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 747819741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: 29d0c839f85f9ff4c8882ad4f196c5e2, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!4 &763036524 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7319176432077255142, guid: eb3fead79b1528c42be883765ab8561f, type: 3}
@@ -12643,7 +12675,6 @@ MonoBehaviour:
   playerPrefab: {fileID: 4244991897825499815, guid: f793873163e523f4fb3d0130a114e1f7, type: 3}
   generator: {fileID: 747819742}
   lintern: {fileID: 129524529196108602, guid: 1d75049467120cb41ab7e012c428f94a, type: 3}
-  polola: {fileID: 5161670510840872600, guid: 86c0c20387e76bc44b589ad5ae1129d7, type: 3}
 --- !u!114 &1731018789
 MonoBehaviour:
   m_ObjectHideFlags: 0

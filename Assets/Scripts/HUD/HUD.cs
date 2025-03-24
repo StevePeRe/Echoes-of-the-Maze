@@ -76,9 +76,10 @@ public class HUD : MonoBehaviour
     {
         if(itemOnHand == null) return;
 
-        bool use = (e.value > 0) ? true : false;
+        //bool use = (e.value > 0) ? true : false;
+        Debug.Log("Valor use: " + e.value);
         #region Use item
-        inventory.getInventory()[selection].UseItem(use);
+        inventory.getInventory()[selection].UseItem();
         #endregion
     }
 

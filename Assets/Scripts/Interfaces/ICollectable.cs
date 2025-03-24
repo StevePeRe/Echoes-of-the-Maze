@@ -15,7 +15,7 @@ public interface ICollectable
 
     public void DropItem(); // soltarlo
 
-    public void UseItem(bool use); // usar el item
+    public void UseItem(); // usar el item
 
     public void setActive(bool active); // visualizacion en HUD
 

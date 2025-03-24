@@ -6,9 +6,6 @@ using UnityEngine;
 
 public class FarmItem : NetworkBehaviour, ICollectable, IMessageInteraction
 {
-    //[SerializeField] private Transform handPosition;
-    //[SerializeField] private Transform freePos;
-
     private FollowTransform followTransform;
     private Rigidbody rb;
 
@@ -114,21 +111,9 @@ public class FarmItem : NetworkBehaviour, ICollectable, IMessageInteraction
         gameObject.SetActive(active);
     }
 
-    public void UseItem(bool use)
+    public void UseItem()
     {
-        useItemServerRpc(use);
-    }
-
-    [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
-    private void useItemServerRpc(bool use)
-    {
-        useItemClientRpc(use);
-    }
-
-    [ClientRpc]
-    private void useItemClientRpc(bool use)
-    {
-        if (use) { Debug.Log("Uso el objeto " + gameObject.name); }
+        // los objetos solo de farmeo no se pueden usar
     }
 
     public string getMessageToShow()

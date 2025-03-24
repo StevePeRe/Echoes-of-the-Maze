@@ -131,13 +131,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2371401176032297580}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.574, y: 0.237, z: 1.025}
+  m_LocalRotation: {x: -0, y: -0.07735388, z: -0, w: 0.9970037}
+  m_LocalPosition: {x: 0.521, y: 0.23700047, z: 0.864}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4244991897825499815}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -8.873, z: 0}
 --- !u!1 &3428776993767744111
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,9 +275,6 @@ MonoBehaviour:
   smoothCrouch: 15
   jumpForce: 12
   gravity: -19.62
-  lintern: {fileID: 129524529196108602, guid: 1d75049467120cb41ab7e012c428f94a, type: 3}
-  polola: {fileID: 5161670510840872600, guid: 86c0c20387e76bc44b589ad5ae1129d7, type: 3}
-  door: {fileID: 713396467052830040, guid: d3396c659229dea48ae2635134b6be9c, type: 3}
 --- !u!143 &6042712426350351992
 CharacterController:
   m_ObjectHideFlags: 0

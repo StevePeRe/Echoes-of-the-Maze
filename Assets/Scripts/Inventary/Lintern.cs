@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class Lintern : NetworkBehaviour, ICollectable, IMessageInteraction
 {
-    //[SerializeField] private Transform handPosition;
-    //[SerializeField] private Transform freePos;
-    private BoxCollider boxCollider;
+    [SerializeField] private Light lightFlashlight;
+    private bool useItem;
     private Rigidbody rb;
-
     private FollowTransform followTransform;
 
     [SerializeField] private string _name;
@@ -49,8 +48,10 @@ public class Lintern : NetworkBehaviour, ICollectable, IMessageInteraction
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        useItem = false;
+        lightFlashlight.enabled = false;
         rb = GetComponent<Rigidbody>();
         followTransform = GetComponent<FollowTransform>();
     }
@@ -88,7 +89,7 @@ public class Lintern : NetworkBehaviour, ICollectable, IMessageInteraction
         DropItemClientRpc();
     }
 
-    [ClientRpc]
+    [ClientRpc] // lo hace para el que lo llamo pero en el servidor para que los demas lo vean replicado
     private void DropItemClientRpc()
     {
         rb.useGravity = true;
@@ -114,21 +115,32 @@ public class Lintern : NetworkBehaviour, ICollectable, IMessageInteraction
         gameObject.SetActive(active);
     }
 
-    public void UseItem(bool use)
+    public void UseItem()
     {
-        useItemServerRpc(use);
+        useItemServerRpc();
     }
 
     [ServerRpc(RequireOwnership = false)] // aunque no sea dueño del objeto el cliente puede llamar a este metodo
-    private void useItemServerRpc(bool use)
+    private void useItemServerRpc()
     {
-        useItemClientRpc(use);
+        useItemClientRpc();
     }
 
     [ClientRpc]
-    private void useItemClientRpc(bool use)
+    private void useItemClientRpc()
     {
-        if (use) { Debug.Log("Uso el objeto " + gameObject.name); }
+        useItem = !useItem;
+        Debug.Log("Valor useItem: " + useItem);
+        if (useItem)
+        {
+            Debug.Log("enciendo");
+            lightFlashlight.enabled = true;
+        }
+        else {
+            Debug.Log("apago");
+            lightFlashlight.enabled = false; 
+        }
+        
     }
 
     public string getMessageToShow()

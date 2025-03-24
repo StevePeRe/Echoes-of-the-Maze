@@ -154,6 +154,7 @@ public class Player : NetworkBehaviour
         if (cameraPlayer != null) {
             Vector3 eulerRotation = cameraPlayer.transform.eulerAngles;
             transform.rotation = Quaternion.Euler(0, eulerRotation.y, 0); // solo rotacion en eje Y
+            gameObject.transform.GetChild(3).rotation = cameraPlayer.transform.rotation; // rotacion de la mano
         }
         #endregion
     }

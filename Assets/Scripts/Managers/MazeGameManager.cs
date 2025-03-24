@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
+using Unity.AI.Navigation;
+using UnityEngine.AI;
 
 public class MazeGameManager : NetworkBehaviour
 {
@@ -13,11 +16,12 @@ public class MazeGameManager : NetworkBehaviour
     [SerializeField] private Transform playerPrefab;
     [SerializeField] LevelGenerator3D generator;
 
+    NavMeshSurface navMeshMaze;
     //[SerializeField] private Section prefab;
 
     // pruebas
     public Transform lintern;
-    public Transform polola;
+    //public Transform polola;
 
     private enum State
     {
@@ -34,9 +38,9 @@ public class MazeGameManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            //Transform spwObj = Instantiate(lintern);
-            //spwObj.GetComponent<NetworkObject>().Spawn(false);
-            //spwObj.transform.position = new Vector3(0.02f, 13.23f, 7.62f);
+            Transform spwObj = Instantiate(lintern);
+            spwObj.GetComponent<NetworkObject>().Spawn(false);
+            spwObj.transform.position = new Vector3(0.02f, 13.23f, 7.62f);
 
             //Transform spwObj2 = Instantiate(polola);
             //spwObj2.GetComponent<NetworkObject>().Spawn(false);
@@ -76,6 +80,7 @@ public class MazeGameManager : NetworkBehaviour
     {
         state = State.WaitingToStart;
         seed = 0;
+        navMeshMaze = generator.gameObject.GetComponent<NavMeshSurface>();
     }
 
     // Update is called once per frame
@@ -126,9 +131,38 @@ public class MazeGameManager : NetworkBehaviour
             if (IsServer)
             {
                 SpawnerObjectMazeManager.instance.spawnObjectsInMaze();
+                //await BuildNavMeshAsync(navMeshMaze);
+                StartCoroutine(buildNavMesh()); //  se hace en el servidor ya que la IA la manejara el servidor y la replicara a los clientes
             }
         });
     }
+
+    private IEnumerator buildNavMesh()
+    {
+        yield return new WaitForEndOfFrame();
+
+        navMeshMaze.BuildNavMesh(); Debug.Log("navmesh construido"); 
+    }
+
+    //private async Task BuildNavMeshAsync(NavMeshSurface surface)
+    //{
+    //    var tcs = new TaskCompletionSource<bool>();
+    //    NavMeshBuilder.UpdateNavMeshDataAsync(surface.navMeshData, surface.GetBuildSettings(), surface.GetSources(), surface.GetWorldBounds(), (data) =>
+    //    {
+    //        surface.navMeshData = data;
+    //        tcs.SetResult(true);
+    //    });
+    //    await tcs.Task;
+    //}
+
+    //public Task UpdateNavMeshAsync(this NavMeshSurface surface, NavMeshData data)
+    //{
+    //    var tcs = new TaskCompletionSource<bool>();
+    //    surface.navMeshData = data;
+    //    surface.navMeshDataInstance = NavMesh.AddNavMeshData(data);
+    //    surface.BuildNavMeshAsync(data, tcs.SetResult);
+    //    return tcs.Task;
+    //}
 
     //public bool getGeneratePreMaze() { return state == State.GeneratePreMaze; } // 
     public bool getWaitingToStart() { return state == State.WaitingToStart; }
