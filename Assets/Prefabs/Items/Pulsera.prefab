@@ -136,7 +136,7 @@ MonoBehaviour:
   _name: Pulsera
   _image: {fileID: 21300000, guid: 7e1edf1d4c1ae284e914fb72be3139c1, type: 3}
   _costObject: 7
-  _weigthObject: 7
+  _weigthObject: 2
 --- !u!65 &7548571934922302362
 BoxCollider:
   m_ObjectHideFlags: 0
